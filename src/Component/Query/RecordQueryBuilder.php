@@ -291,13 +291,13 @@ class RecordQueryBuilder
      * must be specified.
      *
      * @param string $fieldName The name of the field on which to filter by date.
-     * @param \DateTime $minDate The lower date boundary.
-     * @param \DateTime $maxDate The upper date boundary.
+     * @param \DateTimeInterface $minDate The lower date boundary.
+     * @param \DateTimeInterface $maxDate The upper date boundary.
      * @return $this
      * @throws \InvalidArgumentException when the field name is an invalid or empty string
      * @throws \InvalidArgumentException when both min and max date values are null.
      */
-    public function setDateCriterion($fieldName, \DateTime $minDate = null, \DateTime $maxDate = null)
+    public function setDateCriterion($fieldName, \DateTimeInterface $minDate = null, \DateTimeInterface $maxDate = null)
     {
         $this->validateFieldName($fieldName, 'Field name is required and must be a non-empty string.');
 
@@ -425,34 +425,11 @@ class RecordQueryBuilder
             'search_type' => $this->searchType
         );
 
-        if ($this->recordType !== null) {
-            $query['record_type'] = $this->recordType;
-        }
-
-        if ($this->dateCriterionField !== null) {
-            $query['date_field'] = $this->dateCriterionField;
-
-            if ($this->dateCriterionMin) {
-                $query['date_min'] = $this->dateCriterionMin->format('Y/m/d');
-            }
-
-            if ($this->dateCriterionMax) {
-                $query['date_max'] = $this->dateCriterionMax->format('Y/m/d');
-            }
-        }
-
-        if (! empty($this->statuses)) {
-            $query['status'] = $this->statuses;
-        }
-
-        if (! empty($this->fields)) {
-            $query['fields'] = $this->fields;
-        }
-
-        if ($this->sortType !== null) {
-            $query['sort'] = $this->sortType;
-            $query['ord'] = $this->sortDescending ? 'desc' : 'asc';
-        }
+        $query = $this->appendRecordType($query);
+        $query = $this->appendDates($query);
+        $query = $this->appendStatuses($query);
+        $query = $this->appendFields($query);
+        $query = $this->appendSort($query);
 
         return new RecordQuery($query, $this->searchType);
     }
@@ -469,5 +446,91 @@ class RecordQueryBuilder
         $this->conditionBuilder->andWhere($this->query);
 
         return $compiler->compile($this->conditionBuilder->getPredicate());
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function appendRecordType($query)
+    {
+        if ($this->recordType !== null) {
+            $query['record_type'] = $this->recordType;
+
+            return $query;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function appendDates($query)
+    {
+        if ($this->dateCriterionField !== null) {
+            $query['date_field'] = $this->dateCriterionField;
+
+            if ($this->dateCriterionMin) {
+                $query['date_min'] = $this->dateCriterionMin->format('Y/m/d');
+            }
+
+            if ($this->dateCriterionMax) {
+                $query['date_max'] = $this->dateCriterionMax->format('Y/m/d');
+
+                return $query;
+            }
+
+            return $query;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function appendStatuses($query)
+    {
+        if (!empty($this->statuses)) {
+            $query['status'] = $this->statuses;
+
+            return $query;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function appendFields($query)
+    {
+        if (!empty($this->fields)) {
+            $query['fields'] = $this->fields;
+
+            return $query;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function appendSort($query)
+    {
+        if ($this->sortType !== null) {
+            $query['sort'] = $this->sortType;
+            $query['ord'] = $this->sortDescending ? 'desc' : 'asc';
+
+            return $query;
+        }
+
+        return $query;
     }
 }
