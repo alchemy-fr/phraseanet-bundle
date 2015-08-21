@@ -1,6 +1,6 @@
 <?php
 
-namespace Alchemy\Phraseanet\Tests;
+namespace Alchemy\Phraseanet\Tests\Predicate;
 
 use Alchemy\Phraseanet\Predicate\NullPredicate;
 use Alchemy\Phraseanet\Predicate\OrPredicate;
