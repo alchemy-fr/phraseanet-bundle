@@ -2,8 +2,7 @@
 
 ## Description
 
-Provides a component layer along with a Symfony bundle to upload documents to Phraseanet and create new records
-from those documents
+Provides a Symfony bundle for easy integration of the Phraseanet PHP SDK in your applications
 
 ## Installation
 
