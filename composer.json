@@ -1,0 +1,32 @@
+{
+  "name": "alchemy/phraseanet-bundle",
+  "description": "Phraseanet API Symfony bundle",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thibaud Fabre",
+      "email": "thibaud@aztech.io"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "phraseanet/php-sdk": "^0.7.0"
+  },
+  "require-dev": {
+    "symfony/symfony": "^2.7",
+    "phpunit/phpunit": "^4.8",
+    "squizlabs/php_codesniffer": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Alchemy\\PhraseanetBundle\\": "src/Bundle",
+      "Alchemy\\Phraseanet\\": "src/Component"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         stopOnError="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         syntaxCheck="false"
+         bootstrap="vendor/autoload.php">
+    <php>
+        <const name="TEST_RESOURCES_DIR" value="tests/resources" />
+    </php>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="./tests/output/Coverage/"
+             charset="UTF-8" yui="true" highlight="true" />
+        <log type="junit" target="./tests/output/Results/Results.xml"
+             logIncompleteSkipped="true" />
+    </logging>
+    <testsuites>
+        <testsuite name="Component tests">
+            <directory suffix=".php">tests/unit/Component</directory>
+        </testsuite>
+        <testsuite name="Bundle tests">
+            <directory suffix=".php">tests/unit/Bundle</directory>
+        </testsuite>
+        <!--<testsuite name="Provider tests">
+            <directory suffix=".php">tests/unit/Provider</directory>
+        </testsuite>-->
+    </testsuites>
+</phpunit>
