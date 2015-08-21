@@ -1,6 +1,6 @@
 <?php
 
-namespace Alchemy\Phraseanet\Phraseanet\Query;
+namespace Alchemy\Phraseanet\Query;
 
 use PhraseanetSDK\Repository\Record;
 use PhraseanetSDK\Repository\Story;
