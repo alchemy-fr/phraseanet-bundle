@@ -6,6 +6,12 @@ filter:
 before_commands:
     - "composer install --prefer-source"
 
+checks:
+    php:
+        code_rating: true
+        duplication: true
+
+
 tools:
     external_code_coverage:
       runs: 1
