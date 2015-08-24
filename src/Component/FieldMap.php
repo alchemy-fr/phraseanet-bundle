@@ -33,7 +33,7 @@ class FieldMap
      */
     public function getFieldName($key, $locale)
     {
-        if (! isset($this->fieldMap[$key][$locale])) {
+        if (!isset($this->fieldMap[$key][$locale])) {
             throw new \OutOfBoundsException();
         }
 
