@@ -48,7 +48,7 @@ class QueryPredicateVisitor implements PredicateVisitor
     }
 
     /**
-     * @param $glue
+     * @param string $glue
      * @param string[] $expressions
      * @return string
      */
@@ -69,7 +69,7 @@ class QueryPredicateVisitor implements PredicateVisitor
 
     /**
      * @param \Traversable $predicates
-     * @return array
+     * @return string[]
      */
     private function compilePredicates(\Traversable $predicates)
     {
