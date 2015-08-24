@@ -17,12 +17,12 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
     public function testGetFieldNameReturnsMappedFieldName()
     {
         $map = new FieldMap([
-            'bacon' => 'ham',
-            'egg' => 'yolk'
+            'bacon' => [ 'en' => 'ham'],
+            'egg' => [ 'en' => 'yolk' ]
         ]);
 
-        $this->assertEquals('yolk', $map->getFieldName('egg'));
-        $this->assertEquals('ham', $map->getFieldName('bacon'));
+        $this->assertEquals('yolk', $map->getFieldName('egg', 'en'));
+        $this->assertEquals('ham', $map->getFieldName('bacon', 'en'));
     }
 
     /**
@@ -31,10 +31,10 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
     public function testGetUndefinedFieldThrowsException()
     {
         $map = new FieldMap([
-            'bacon' => 'ham',
-            'egg' => 'yolk'
+            'bacon' => [ 'en' => 'ham' ],
+            'egg' => [ 'en' => 'yolk' ]
         ]);
 
-        $map->getFieldName('milk');
+        $map->getFieldName('milk', 'en');
     }
 }

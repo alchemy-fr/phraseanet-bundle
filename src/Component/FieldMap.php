@@ -27,16 +27,17 @@ class FieldMap
     }
 
     /**
-     * @param string $key
+     * @param string $key Alias of the field to fetch
+     * @param string $locale Short locale name (eg. en)
      * @return string
      */
-    public function getFieldName($key)
+    public function getFieldName($key, $locale)
     {
-        if (! isset($this->fieldMap[$key])) {
+        if (! isset($this->fieldMap[$key][$locale])) {
             throw new \OutOfBoundsException();
         }
 
-        return $this->fieldMap[$key];
+        return $this->fieldMap[$key][$locale];
     }
 
     public function getAliasFromFieldName($key)
