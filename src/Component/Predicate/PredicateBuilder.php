@@ -22,7 +22,8 @@ class PredicateBuilder
             $expression = new LiteralPredicate($expression);
         }
 
-        $this->predicateStack->top()->pushPredicate(new AndPredicate($expression));
+        $this->predicateStack = new \SplStack();
+        $this->predicateStack->push(new AndPredicate($expression));
 
         return $this;
     }

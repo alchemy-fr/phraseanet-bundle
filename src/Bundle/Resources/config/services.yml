@@ -1,0 +1,56 @@
+parameters:
+  phraseanet.enable_cache: false
+
+services:
+
+  phraseanet.definitionMap:
+    class: Alchemy\Phraseanet\DefinitionMap
+    arguments:
+      - %api.definitions%
+
+  phraseanet.twig_extension:
+    class: Alchemy\PhraseanetBundle\Twig\PhraseanetExtension
+    arguments:
+      - %phraseanet.subdefs%
+      - @phraseanet.thumbHelper
+      - @phraseanet.metadataHelper
+      - @phraseanet.feedHelper
+    tags:
+      - { name: twig.extension }
+
+  phraseanet.plugins.can_cache_strategy:
+    class: PhraseanetSDK\Cache\CanCacheStrategy
+
+  phraseanet.plugins.revalidation:
+    class: Guzzle\Plugin\Cache\DenyRevalidation
+
+  phraseanet.plugins.filesystem.doctrine_cache:
+    class: Doctrine\Common\Cache\FilesystemCache
+    arguments:
+      - %kernel.cache_dir%/phraseanet/
+
+  phraseanet.plugins.filesystem.doctrine_cache_adapter:
+    class: Guzzle\Cache\DoctrineCacheAdapter
+    arguments:
+      - @phraseanet.plugins.filesystem.doctrine_cache
+
+  phraseanet.plugins.fileysystem.storage:
+    class: Guzzle\Plugin\Cache\DefaultCacheStorage
+    arguments:
+      - @phraseanet.plugins.filesystem.doctrine_cache_adapter
+
+  phraseanet.plugins.filesystem:
+    class: Guzzle\Plugin\Cache\CachePlugin
+    arguments:
+      - storage: @phraseanet.plugins.fileysystem.storage
+        revalidation: @phraseanet.plugins.revalidation
+        can_cache: @phraseanet.plugins.can_cache_strategy
+    tags:
+      - { name: phraseanet.plugin, enabled: %phraseanet.enable_cache% }
+
+  phraseanet.repository.user:
+    class: PhraseanetSDK\Repository\User
+    factory_service: phraseanet.em_factory
+    factory_method: getRepository
+    arguments:
+      - user

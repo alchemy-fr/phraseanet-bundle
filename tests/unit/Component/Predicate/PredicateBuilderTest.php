@@ -48,11 +48,11 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $builder = new PredicateBuilder();
 
-        $builder->startOrGroup();
+        $builder->startAndGroup();
         $builder->orWhere('bacon');
         $builder->orWhere('eggs');
         $builder->endGroup();
-        $builder->where('steak');
+        $builder->orWhere('steak');
 
         $this->assertQuery('((bacon OR eggs) AND steak)', $builder);
     }
@@ -79,9 +79,9 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->orWhere('bacon');
         $builder->orWhere('eggs');
         $builder->endGroup();
-        $builder->where('steak');
+        $builder->orWhere('steak');
         $builder->endGroup();
-        $builder->where('wine');
+        $builder->andWhere('wine');
 
         $this->assertQuery('(((bacon OR eggs) OR steak) AND wine)', $builder);
     }
@@ -101,9 +101,6 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->endGroup();
         $builder->endGroup();
 
-        $compiler = new QueryPredicateVisitor();
-        $query = $compiler->compile($builder->getPredicate());
-
-        $this->assertEquals('((bacon AND eggs) OR (steak AND fries))', $query);
+        $this->assertQuery('((bacon AND eggs) OR (steak AND fries))', $builder);
     }
 }
