@@ -2,14 +2,18 @@
 
 namespace Alchemy\Phraseanet\Tests\Predicate;
 
-use Alchemy\Phraseanet\Predicate\AndPredicate;
-use Alchemy\Phraseanet\Predicate\LiteralPredicate;
-use Alchemy\Phraseanet\Predicate\OrPredicate;
 use Alchemy\Phraseanet\Predicate\PredicateBuilder;
 use Alchemy\Phraseanet\Query\QueryPredicateVisitor;
 
 class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
 {
+
+    private function assertQuery($expected, PredicateBuilder $builder)
+    {
+        $compiler = new QueryPredicateVisitor();
+
+        $this->assertEquals($expected, $compiler->compile($builder->getPredicate()));
+    }
 
     public function testWhereBuildsSingleLiteralPredicate()
     {
@@ -17,8 +21,7 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->where('bacon');
 
-        $this->assertInstanceOf(LiteralPredicate::class, $builder->getPredicate());
-        $this->assertEquals('bacon', $builder->getPredicate()->getPredicateValue());
+        $this->assertQuery('bacon', $builder);
     }
 
     public function testWhereAndWhereBuildsCompositePredicate()
@@ -28,15 +31,7 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->where('bacon');
         $builder->andWhere('eggs');
 
-        $this->assertInstanceOf(AndPredicate::class, $builder->getPredicate());
-
-        $predicates = $builder->getPredicate()->getPredicates();
-
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[0]);
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[1]);
-
-        $this->assertEquals('bacon', $predicates[0]->getPredicateValue());
-        $this->assertEquals('eggs', $predicates[1]->getPredicateValue());
+        $this->assertQuery('(bacon AND eggs)', $builder);
     }
 
     public function testWhereOrWhereBuildsCompositePredicate()
@@ -46,45 +41,21 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->where('bacon');
         $builder->orWhere('eggs');
 
-        $this->assertInstanceOf(OrPredicate::class, $builder->getPredicate());
-
-        $predicates = $builder->getPredicate()->getPredicates();
-
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[0]);
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[1]);
-
-        $this->assertEquals('bacon', $predicates[0]->getPredicateValue());
-        $this->assertEquals('eggs', $predicates[1]->getPredicateValue());
+        $this->assertQuery('(bacon OR eggs)', $builder);
     }
 
     public function testStartAndGroupBuildsCompositePredicate()
     {
         $builder = new PredicateBuilder();
 
-        $builder->startAndGroup();
+        $builder->startOrGroup();
         $builder->orWhere('bacon');
         $builder->orWhere('eggs');
         $builder->endGroup();
-        $builder->andWhere('test');
+        $builder->where('steak');
 
-        $predicate = $builder->getPredicate();
-
-        $this->assertInstanceOf(AndPredicate::class, $predicate);
-
-        $predicates = $predicate->getPredicates();
-
-        $this->assertCount(2, $predicates);
-        $this->assertInstanceOf(OrPredicate::class, $predicates[0]);
-        $this->assertCount(2, $predicates[0]->getPredicates());
-
-        $predicates = $predicates[0]->getPredicates();
-
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[0]);
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[1]);
-        $this->assertEquals('bacon', $predicates[0]->getPredicateValue());
-        $this->assertEquals('eggs', $predicates[1]->getPredicateValue());
+        $this->assertQuery('((bacon OR eggs) AND steak)', $builder);
     }
-
 
     public function testStartOrGroupBuildsCompositePredicate()
     {
@@ -94,24 +65,25 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->andWhere('bacon');
         $builder->andWhere('eggs');
         $builder->endGroup();
-        $builder->orWhere('test');
+        $builder->orWhere('steak');
 
-        $predicate = $builder->getPredicate();
+        $this->assertQuery('((bacon AND eggs) OR steak)', $builder);
+    }
 
-        $this->assertInstanceOf(OrPredicate::class, $predicate);
+    public function testStartMultipleOrGroupsBuildsCompositePredicate()
+    {
+        $builder = new PredicateBuilder();
 
-        $predicates = $predicate->getPredicates();
+        $builder->startOrGroup();
+        $builder->startOrGroup();
+        $builder->orWhere('bacon');
+        $builder->orWhere('eggs');
+        $builder->endGroup();
+        $builder->where('steak');
+        $builder->endGroup();
+        $builder->where('wine');
 
-        $this->assertCount(2, $predicates);
-        $this->assertInstanceOf(AndPredicate::class, $predicates[0]);
-        $this->assertCount(2, $predicates[0]->getPredicates());
-
-        $predicates = $predicates[0]->getPredicates();
-
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[0]);
-        $this->assertInstanceOf(LiteralPredicate::class, $predicates[1]);
-        $this->assertEquals('bacon', $predicates[0]->getPredicateValue());
-        $this->assertEquals('eggs', $predicates[1]->getPredicateValue());
+        $this->assertQuery('(((bacon OR eggs) OR steak) AND wine)', $builder);
     }
 
     public function testNestingGroupsBuildsCorrectCompositeStructure()
