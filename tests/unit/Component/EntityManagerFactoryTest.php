@@ -103,7 +103,7 @@ class EntityManagerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Story::class, $repository);
         // Triggers proxy initialization
         $repository->findById(1, 1);
-    }.
+    }
 
     public function testGetRepositoryWithAnnotationCachePassesCorrectOptionsToApplication()
     {
