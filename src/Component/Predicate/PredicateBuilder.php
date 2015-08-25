@@ -10,15 +10,10 @@ class PredicateBuilder
      */
     private $predicateStack;
 
-    /**
-     * @var Predicate
-     */
-    private $predicate = null;
-
     public function __construct()
     {
         $this->predicateStack = new \SplStack();
-        $this->predicate = new NullPredicate();
+        $this->predicateStack->push(new AndPredicate(new NullPredicate()));
     }
 
     public function where($expression)
@@ -27,8 +22,7 @@ class PredicateBuilder
             $expression = new LiteralPredicate($expression);
         }
 
-        $this->predicateStack = new \SplStack();
-        $this->predicate = $expression;
+        $this->predicateStack->top()->pushPredicate(new AndPredicate($expression));
 
         return $this;
     }
@@ -39,17 +33,12 @@ class PredicateBuilder
             $expression = new LiteralPredicate($expression);
         }
 
-        $this->predicate = $this->predicate->andPredicate($expression);
+        if ($this->predicateStack->count() > 1  && ! $this->predicateStack->top() instanceof AndPredicate) {
+            $this->startAndGroup();
+        }
 
-        return $this;
-    }
-
-    public function startAndGroup()
-    {
-        $predicate = new NullPredicate();
-
-        $this->predicateStack->push($this->predicate->andPredicate($predicate));
-        $this->predicate = $predicate;
+        $predicate = $this->predicateStack->pop()->andPredicate($expression);
+        $this->predicateStack->push($predicate);
 
         return $this;
     }
@@ -60,43 +49,71 @@ class PredicateBuilder
             $expression = new LiteralPredicate($expression);
         }
 
-        $this->predicate = $this->predicate->orPredicate($expression);
+        if ($this->predicateStack->count() > 1  && ! $this->predicateStack->top() instanceof OrPredicate) {
+            $this->startOrGroup();
+        }
+
+        $predicate = $this->predicateStack->pop()->orPredicate($expression);
+        $this->predicateStack->push($predicate);
+
+        return $this;
+    }
+
+    public function startAndGroup()
+    {
+        $predicate = new AndPredicate(new NullPredicate());
+
+        $this->predicateStack->top()->pushPredicate($predicate);
+        $this->predicateStack->push($predicate);
 
         return $this;
     }
 
     public function startOrGroup()
     {
-        $predicate = new NullPredicate();
+        $predicate = new OrPredicate(new NullPredicate());
 
-        $this->predicateStack->push($this->predicate->orPredicate($predicate));
-        $this->predicate = $predicate;
+        $this->predicateStack->top()->pushPredicate($predicate);
+        $this->predicateStack->push($predicate);
 
         return $this;
     }
 
     public function endGroup()
     {
-        if ($this->predicateStack->isEmpty()) {
+        if ($this->predicateStack->count() <= 1) {
             throw new \BadMethodCallException('Invalid operation: Not in a condition group.');
         }
 
-        $predicate = $this->predicateStack->pop();
-        $predicate->pushPredicate($this->predicate);
-        $this->predicate = $predicate;
+        $this->predicateStack->pop();
+
+        return $this;
     }
 
     public function endAllGroups()
     {
-        while (! $this->predicateStack->isEmpty()) {
-            $this->endGroup();
+        while ($this->predicateStack->count() > 1) {
+            $this->predicateStack->pop();
         }
+
+        return $this;
+    }
+
+    public function getRawPredicate()
+    {
+        return $this->predicateStack->bottom();
     }
 
     public function getPredicate()
     {
-        $this->endAllGroups();
+        $predicate = $this->predicateStack->bottom()
+            ->pruneInstancesOf(NullPredicate::class, true)
+            ->pruneRedundantComposites(true);
 
-        return $this->predicate;
+        if ($predicate instanceof CompositePredicate) {
+            $predicate = $predicate->pruneInstancesOf(NullPredicate::class, true);
+        }
+
+        return $predicate;
     }
 }

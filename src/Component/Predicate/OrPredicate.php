@@ -5,10 +5,13 @@ namespace Alchemy\Phraseanet\Predicate;
 class OrPredicate extends CompositePredicate
 {
 
-    public function __construct(Predicate $lhs, Predicate $rhs)
+    public function __construct(Predicate $lhs, Predicate $rhs = null)
     {
         $this->pushPredicate($lhs);
-        $this->pushPredicate($rhs);
+
+        if ($rhs !== null) {
+            $this->pushPredicate($rhs);
+        }
     }
 
     public function orPredicate(Predicate $predicate)

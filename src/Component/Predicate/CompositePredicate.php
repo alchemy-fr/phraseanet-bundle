@@ -28,6 +28,54 @@ abstract class CompositePredicate extends AbstractPredicate implements \Iterator
         return $this->predicates;
     }
 
+    public function pruneInstancesOf($class, $recursive = false)
+    {
+        $pruned = [];
+
+        foreach ($this->predicates as $predicate) {
+            if ($predicate instanceof $class) {
+                continue;
+            }
+
+            if ($recursive && $predicate instanceof self) {
+                $predicate = $predicate->pruneInstancesOf($class, $recursive);
+            }
+
+            $pruned[] = $predicate;
+        }
+
+        $clone = clone $this;
+        $clone->predicates = $pruned;
+
+        return $clone;
+    }
+
+    public function pruneRedundantComposites($recursive = false)
+    {
+        if (empty($this->predicates)) {
+            return new NullPredicate();
+        }
+
+        $pruned = [];
+
+        foreach ($this->predicates as $predicate) {
+            if ($recursive && $predicate instanceof self) {
+                $predicate = $predicate->pruneRedundantComposites($recursive);
+            }
+
+            $pruned[] = $predicate;
+        }
+
+        $clone = clone $this;
+        $clone->predicates = $pruned;
+
+        if (count($clone->predicates) == 1) {
+            return reset($clone->predicates);
+        }
+
+        return $clone;
+    }
+
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Retrieve an external iterator
