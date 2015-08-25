@@ -103,4 +103,14 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertQuery('((bacon AND eggs) OR (steak AND fries))', $builder);
     }
+
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testEndGroupThrowsExceptionWhenNoGroupIsActive()
+    {
+        $builder = new PredicateBuilder();
+
+        $builder->endGroup();
+    }
 }

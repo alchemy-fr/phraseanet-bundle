@@ -9,13 +9,32 @@ namespace Alchemy\Phraseanet;
 class FieldMap
 {
     /**
-     * @var string[]
+     * @var string[][]
      */
-    private $fieldMap;
+    private $rawMap = array();
 
+    /**
+     * @var string[][]
+     */
+    private $fieldMap = array();
+
+    /**
+     * @param array $mappings An array of field mappings indexed by alias and locale, ie
+     *                        array('alias' => array('fr' => 'phraseanetFieldName'))
+     */
     public function __construct(array $mappings = array())
     {
-        $this->fieldMap = $mappings;
+        $this->rawMap = $mappings;
+
+        foreach ($mappings as $alias => $localizedFields) {
+            foreach ($localizedFields as $locale => $localizedField) {
+                if (! isset($this->fieldMap[$locale])) {
+                    $this->fieldMap[$locale] = array();
+                }
+
+                $this->fieldMap[$locale][$alias] = $localizedField;
+            }
+        }
     }
 
     /**
@@ -23,25 +42,44 @@ class FieldMap
      */
     public function toArray()
     {
-        return $this->fieldMap;
+        return $this->rawMap;
     }
 
     /**
+     * Retrieves a field name from an alias
+     *
      * @param string $key Alias of the field to fetch
      * @param string $locale Short locale name (eg. en)
      * @return string
      */
     public function getFieldName($key, $locale)
     {
-        if (!isset($this->fieldMap[$key][$locale])) {
+        if (!isset($this->fieldMap[$locale][$key])) {
             throw new \OutOfBoundsException();
         }
 
-        return $this->fieldMap[$key][$locale];
+        return $this->fieldMap[$locale][$key];
     }
 
-    public function getAliasFromFieldName($key)
+    /**
+     * Retrieves an alias from a localized source field name
+     *
+     * @param string $key Name of the field
+     * @param string $locale
+     * @return string
+     */
+    public function getAliasFromFieldName($key, $locale)
     {
-        $flippedArray = array_flip($this->fieldMap);
+        if (! isset($this->fieldMap[$locale])) {
+            throw new \OutOfBoundsException();
+        }
+
+        $flipped = array_flip($this->fieldMap[$locale]);
+
+        if (! isset($flipped[$key])) {
+            throw new \OutOfBoundsException();
+        }
+
+        return $flipped[$key];
     }
 }

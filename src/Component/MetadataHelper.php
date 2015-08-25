@@ -8,13 +8,27 @@ use PhraseanetSDK\Entity\Story;
 class MetadataHelper
 {
 
+    /**
+     * @var string
+     */
     private $defaultLocale;
 
+    /**
+     * @var FieldMap
+     */
     private $fieldsMap;
 
+    /**
+     * @var string
+     */
     private $fallbackLocale;
 
-    public function __construct($fieldsMap, $defaultLocale, $fallbackLocale)
+    /**
+     * @param FieldMap $fieldsMap
+     * @param string $defaultLocale
+     * @param string $fallbackLocale
+     */
+    public function __construct(FieldMap $fieldsMap, $defaultLocale, $fallbackLocale)
     {
         $this->fieldsMap = $fieldsMap;
         $this->defaultLocale = $defaultLocale;
@@ -23,39 +37,29 @@ class MetadataHelper
 
     public function getStoryField(Story $story, $field, $locale = null)
     {
-        // fallback to caption
-        $key = $this->getSourceKey($field, $locale);
+        try {
+            $key = $this->fieldsMap->getFieldName($field, $locale);
 
-        if (!$key) {
-            return;
-        }
-
-        foreach ($story->getCaption() as $captionField) {
-            // Try to find the corresponding RecordCaption
-            if ($key === $captionField->getName()) {
-                return $captionField->getValue();
+            foreach ($story->getCaption() as $captionField) {
+                // Try to find the corresponding RecordCaption
+                if ($key === $captionField->getName()) {
+                    return $captionField->getValue();
+                }
             }
+        }
+        catch (\OutOfBoundsException $exception) {
+            return '';
         }
     }
 
     public function getRecordFields(Record $record, array $fields = null, $locale = null)
     {
-        if (!$fields) {
-            $fields = array_keys($this->fieldsMap);
-        }
-
-        // Build a dictionary like [phraseanet_meta_key] => [local_field]
-        $reverseFieldMap = array();
-        foreach ($fields as $field) {
-            $sourceKey = $this->getSourceKey($field, $locale);
-            $reverseFieldMap[$sourceKey] = $field;
-        }
-
         $map = array_fill_keys($fields, null);
 
         foreach ($record->getMetadata() as $metadata) {
             // Get local field from phraseanet caption name
             $sourceKey = $metadata->getName();
+
             if (isset($reverseFieldMap[$sourceKey])) {
                 $field = $reverseFieldMap[$sourceKey];
             } else {
@@ -64,6 +68,7 @@ class MetadataHelper
 
             // Store value in map
             $value = $metadata->getValue();
+
             if (isset($map[$sourceKey])) {
                 // If we already have metadata on that key then it's a
                 // multi-valued metadata.
@@ -84,7 +89,7 @@ class MetadataHelper
 
     public function getRecordField(Record $record, $field, $locale = null)
     {
-        $key = $this->getSourceKey($field, $locale);
+        $key = $this->fieldsMap->getFieldName($field, $locale);
 
         if (!$key) {
             return null;
@@ -118,31 +123,6 @@ class MetadataHelper
         }
 
         return $values;
-    }
-
-    private function getSourceKey($field, $locale = null)
-    {
-        if (! isset($this->fieldsMap[$field])) {
-            throw new \Exception(sprintf('The field "%s" is not mapped in remote instance configuration.', $field));
-        }
-
-        $fieldMap = $this->fieldsMap[$field];
-
-        if (is_string($fieldMap)) {
-            return $fieldMap;
-        }
-
-        $resolvedLocale = $locale ?: $this->defaultLocale;
-
-        if (isset($fieldMap[$resolvedLocale])) {
-            return $fieldMap[$resolvedLocale];
-        }
-
-        if (isset($fieldMap[$this->fallbackLocale])) {
-            return $fieldMap[$this->fallbackLocale];
-        }
-
-        return '';
     }
 
     public function getLegacyRecordMetadata($source)
