@@ -57,14 +57,12 @@ class PhraseanetExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('record_caption', [ $this, 'getRecordCaption' ]),
             new \Twig_SimpleFunction('story_caption', [ $this, 'getStoryCaption' ]),
-            new \Twig_SimpleFunction('record_multi_caption', [ $this, 'getRecordMultiCaption' ]),
             new \Twig_SimpleFunction('fetch_thumbnail', [ $this, 'fetchThumbnail' ]),
             new \Twig_SimpleFunction('feed_entry_has_pdf_documents', [
                 $this->feedPdfHelper,
                 'entryContainsPdfDocuments'
             ])
         );
-
     }
 
     public function fetchThumbnail($record, $thumbType = 'medium')

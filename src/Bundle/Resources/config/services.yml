@@ -1,4 +1,5 @@
 parameters:
+
   phraseanet.enable_cache: false
 
 services:
