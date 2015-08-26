@@ -7,13 +7,20 @@ use PhraseanetSDK\Entity\Story;
 
 class ThumbHelper
 {
+
     const DEFAULT_THUMBNAIL_SUBDEF_NAME = 'thumbnail';
 
-    private $thumbnailsMap;
+    /**
+     * @var DefinitionMap
+     */
+    private $thumbnailMap;
 
-    public function __construct(array $thumbnailsMap)
+    /**
+     * @param DefinitionMap $thumbnailMap
+     */
+    public function __construct(DefinitionMap $thumbnailMap)
     {
-        $this->thumbnailsMap = $thumbnailsMap;
+        $this->thumbnailMap = $thumbnailMap;
     }
 
     /**
@@ -30,18 +37,14 @@ class ThumbHelper
             throw new \InvalidArgumentException();
         }
 
-        if (!isset($this->thumbnailsMap[$type])) {
+        if (! $this->thumbnailMap->hasSubDefinition($type)) {
             return $record->getThumbnail();
         }
 
-        $subdefName = $this->thumbnailsMap[$type];
+        $subdefinition = $this->thumbnailMap->getSubDefinition($type);
 
-        if ($subdefName === self::DEFAULT_THUMBNAIL_SUBDEF_NAME) {
-            return $record->getThumbnail();
-        }
-
-        if ($record->getSubdefs()->containsKey($subdefName)) {
-            return $record->getSubdefs()->get($subdefName);
+        if ($record->getSubdefs()->containsKey($subdefinition)) {
+            return $record->getSubdefs()->get($subdefinition);
         }
 
         return $record->getThumbnail();

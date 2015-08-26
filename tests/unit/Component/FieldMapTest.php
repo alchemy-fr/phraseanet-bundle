@@ -58,6 +58,36 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bacon', $map->getAliasFromFieldName('jambon', 'fr'));
     }
 
+    public function testHasAliasReturnsTrueWhenAliasIsDefined()
+    {
+        $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
+
+        $this->assertTrue($map->hasAlias('bacon', 'fr'));
+    }
+
+    public function testHasAliasReturnsFalseWhenAliasIsNotDefined()
+    {
+        $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
+
+        $this->assertFalse($map->hasAlias('bacon', 'en'));
+        $this->assertFalse($map->hasAlias('milk', 'fr'));
+    }
+
+    public function testIsFieldMappedReturnsTrueWhenFieldIsMapped()
+    {
+        $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
+
+        $this->assertTrue($map->isFieldMapped('jambon', 'fr'));
+    }
+
+    public function testIsFieldMappedReturnsFalseWhenFieldIsNotMapped()
+    {
+        $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
+
+        $this->assertFalse($map->isFieldMapped('fromage', 'fr'));
+        $this->assertFalse($map->isFieldMapped('jambon', 'en'));
+    }
+
     /**
      * @expectedException \OutOfBoundsException
      */

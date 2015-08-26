@@ -2,6 +2,7 @@
 
 namespace Alchemy\PhraseanetBundle\Twig;
 
+use Alchemy\Phraseanet\DefinitionMap;
 use Alchemy\Phraseanet\FeedHelper as FeedPdfHelper;
 use Alchemy\Phraseanet\MetadataHelper;
 use Alchemy\Phraseanet\ThumbHelper;
@@ -31,7 +32,7 @@ class PhraseanetExtension extends \Twig_Extension
     private $feedPdfHelper;
 
     public function __construct(
-        array $subdefsMap,
+        DefinitionMap $subdefsMap,
         ThumbHelper $thumbFetcher,
         MetadataHelper $metadataHelper,
         FeedPdfHelper $feedPdfHelper
@@ -44,25 +45,26 @@ class PhraseanetExtension extends \Twig_Extension
 
     public function getFilters()
     {
-        return array(
-            new \Twig_SimpleFilter('phraseanet_meta', array($this, 'doMeta')),
+        return [
             'subdefs' => new \Twig_Filter_Method($this, 'subdefs'),
             'preview_subdefs' => new \Twig_Filter_Method($this, 'previewSubdefs'),
             'file_extension' => new \Twig_Filter_Method($this, 'extension'),
-        );
+        ];
     }
 
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('record_caption', array($this, 'getRecordCaption')),
-            new \Twig_SimpleFunction('story_caption', array($this, 'getStoryCaption')),
-            new \Twig_SimpleFunction('record_multi_caption', array($this, 'getRecordMultiCaption')),
-            new \Twig_SimpleFunction('feed_entry_has_pdf_documents', array(
+            new \Twig_SimpleFunction('record_caption', [ $this, 'getRecordCaption' ]),
+            new \Twig_SimpleFunction('story_caption', [ $this, 'getStoryCaption' ]),
+            new \Twig_SimpleFunction('record_multi_caption', [ $this, 'getRecordMultiCaption' ]),
+            new \Twig_SimpleFunction('fetch_thumbnail', [ $this, 'fetchThumbnail' ]),
+            new \Twig_SimpleFunction('feed_entry_has_pdf_documents', [
                 $this->feedPdfHelper,
-                'entryContainsPdfDocuments')),
-            new \Twig_SimpleFunction('fetch_thumbnail', array($this, 'fetchThumbnail'))
+                'entryContainsPdfDocuments'
+            ])
         );
+
     }
 
     public function fetchThumbnail($record, $thumbType = 'medium')
@@ -75,14 +77,14 @@ class PhraseanetExtension extends \Twig_Extension
         return $this->metadataHelper->getRecordField($record, $field, $locale);
     }
 
-    public function getStoryCaption(Story $story, $field)
+    public function getStoryCaption(Story $story, $field, $locale = null)
     {
-        return $this->metadataHelper->getStoryField($story, $field);
+        return $this->metadataHelper->getStoryField($story, $field, $locale);
     }
 
-    public function getRecordMultiCaption(Record $record, $field)
+    public function getRecordMultiCaption(Record $record, $field, $locale = null)
     {
-        return $this->metadataHelper->getRecordMultiField($record, $field);
+        return $this->metadataHelper->getRecordMultiField($record, $field, $locale);
     }
 
     public function previewSubdefs(Record $record, array $names)
@@ -114,11 +116,6 @@ class PhraseanetExtension extends \Twig_Extension
         }
 
         return $subdefs;
-    }
-
-    public function doMeta($metas, $bindFields)
-    {
-        return $this->metadataHelper->getLegacyRecordMetadata($metas);
     }
 
     public function extension($name)

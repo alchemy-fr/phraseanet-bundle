@@ -13,6 +13,7 @@ class PhraseanetConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $rawData = <<<EOY
 phraseanet:
+    default_instance: default
     instances:
         default:
             connection:
@@ -20,11 +21,20 @@ phraseanet:
                 secret: test-secret
                 url: test-url
                 token: test-token
+            cache:
+                type: redis
+                host: 127.0.0.1
+                port: 6379
+                validation: skip
             mappings:
                 bacon:
                     en: ham
                     fr: jambon
                     es: jamon
+            subdefinitions:
+                low: preview
+                medium: preview_X2
+                large: preview_X4
             repositories:
                 api.default.stories: story
                 api.default.records: record

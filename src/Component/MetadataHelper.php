@@ -37,51 +37,56 @@ class MetadataHelper
 
     public function getStoryField(Story $story, $field, $locale = null)
     {
-        try {
-            $key = $this->fieldsMap->getFieldName($field, $locale);
-
-            foreach ($story->getCaption() as $captionField) {
-                // Try to find the corresponding RecordCaption
-                if ($key === $captionField->getName()) {
-                    return $captionField->getValue();
-                }
-            }
-        }
-        catch (\OutOfBoundsException $exception) {
+        if (! $this->fieldsMap->hasAlias($field, $locale)) {
             return '';
+        }
+
+        $key = $this->fieldsMap->getFieldName($field, $locale);
+
+        foreach ($story->getCaption() as $captionField) {
+            if ($key === $captionField->getName()) {
+                return $captionField->getValue();
+            }
         }
     }
 
     public function getRecordFields(Record $record, array $fields = null, $locale = null)
     {
-        $map = array_fill_keys($fields, null);
+        $map = [];
 
         foreach ($record->getMetadata() as $metadata) {
-            // Get local field from phraseanet caption name
-            $sourceKey = $metadata->getName();
-
-            if (isset($reverseFieldMap[$sourceKey])) {
-                $field = $reverseFieldMap[$sourceKey];
-            } else {
+            if (! $this->fieldsMap->isFieldMapped($metadata->getName(), $locale)) {
                 continue;
             }
 
-            // Store value in map
-            $value = $metadata->getValue();
+            $alias = $this->fieldsMap->getAliasFromFieldName($metadata->getName(), $locale);
 
-            if (isset($map[$sourceKey])) {
-                // If we already have metadata on that key then it's a
-                // multi-valued metadata.
-                // We convert single value to an array of values
-                if (is_array($map[$field])) {
-                    $map[$field] = array($map[$sourceKey], $value);
-                } else {
-                    $map[$field][] = $value;
-                }
-            } else {
-                // Single valued metadata or other values not found yet
-                $map[$field] = $value;
+            if (! isset($fields[$alias])) {
+                continue;
             }
+
+            $map = $this->appendValueToMap($map, $alias, $metadata->getValue());
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param array $map
+     * @param string $alias
+     * @param string $value
+     * @return array
+     */
+    private function appendValueToMap($map, $alias, $value)
+    {
+        if (isset($map[$alias])) {
+            if (! is_array($map[$alias])) {
+                $map[$alias] = [ $map[$alias] ];
+            }
+
+            $map[$alias] = [$map[$alias], $value];
+        } else {
+            $map[$alias] = $value;
         }
 
         return $map;
@@ -89,11 +94,11 @@ class MetadataHelper
 
     public function getRecordField(Record $record, $field, $locale = null)
     {
-        $key = $this->fieldsMap->getFieldName($field, $locale);
-
-        if (!$key) {
+        if (! $this->fieldsMap->hasAlias($field, $locale)) {
             return null;
         }
+
+        $key = $this->fieldsMap->getFieldName($field, $locale);
 
         foreach ($record->getMetadata() as $metadata) {
             // Try to find the corresponding RecordCaption
@@ -107,12 +112,11 @@ class MetadataHelper
 
     public function getRecordMultiField(Record $record, $field, $locale = null)
     {
-        $key = $this->getSourceKey($field, $locale);
-
-        if (!$key) {
-            return;
+        if (! $this->fieldsMap->hasAlias($field, $locale)) {
+            return null;
         }
 
+        $key = $this->fieldsMap->getFieldName($field, $locale);
         $values = array();
 
         foreach ($record->getMetadata() as $metadata) {
@@ -123,37 +127,5 @@ class MetadataHelper
         }
 
         return $values;
-    }
-
-    public function getLegacyRecordMetadata($source)
-    {
-        $legacyLocales = array('en', 'fr');
-        $fields = array();
-
-        foreach ($this->fieldsMap as $field => $locales) {
-            if (is_string($locales)) {
-                // Keep original field
-                $fields[$field] = $locales;
-                // Emulate all legacy locales on that field
-                $locales = array_fill_keys($legacyLocales, $locales);
-            }
-
-            foreach ($locales as $locale => $sourceKey) {
-                // Prevent BC Break by flattening field with locale
-                $fields[sprintf('%s_%s', $field, $locale)] = $sourceKey;
-            }
-        }
-
-        // Fill map with all fields, for unknown values, we use null.
-        $map = array_fill_keys(array_keys($fields), null);
-
-        foreach ($source as $metadata) {
-            $key = array_search($metadata->getName(), $fields, true);
-            if ($key) {
-                $map[$key] = $metadata->getValue();
-            }
-        }
-
-        return $map;
     }
 }

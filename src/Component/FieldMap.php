@@ -61,6 +61,11 @@ class FieldMap
         return $this->fieldMap[$locale][$key];
     }
 
+    public function hasAlias($key, $locale)
+    {
+        return isset($this->fieldMap[$locale][$key]);
+    }
+
     /**
      * Retrieves an alias from a localized source field name
      *
@@ -81,5 +86,16 @@ class FieldMap
         }
 
         return $flipped[$key];
+    }
+
+    public function isFieldMapped($key, $locale)
+    {
+        if (! isset($this->fieldMap[$locale])) {
+            return false;
+        }
+
+        $flipped = array_flip($this->fieldMap[$locale]);
+
+        return isset($flipped[$key]);
     }
 }

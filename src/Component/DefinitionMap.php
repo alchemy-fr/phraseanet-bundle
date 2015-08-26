@@ -49,6 +49,15 @@ class DefinitionMap
     }
 
     /**
+     * @param string $definition
+     * @return bool
+     */
+    public function hasSubDefinition($definition)
+    {
+        return isset($this->map[$definition]);
+    }
+
+    /**
      * @param $definition
      * @return string
      * @throws \Exception
@@ -60,7 +69,7 @@ class DefinitionMap
     }
 
     /**
-     * @param $definition
+     * @param string $definition
      * @return string
      * @throws \Exception
      */

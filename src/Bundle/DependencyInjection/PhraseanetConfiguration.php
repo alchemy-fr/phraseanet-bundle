@@ -2,8 +2,10 @@
 
 namespace Alchemy\PhraseanetBundle\DependencyInjection;
 
+use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\CacheNodeBuilder;
 use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\MappingNodeBuilder;
 use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\RepositoriesNodeBuilder;
+use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\SubDefinitionsNodeBuilder;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -45,8 +47,10 @@ class PhraseanetConfiguration implements ConfigurationInterface
                                 ->scalarNode('token')->end()
                             ->end()
                         ->end()
+                        ->append((new CacheNodeBuilder())->getNode())
                         ->append((new MappingNodeBuilder('mappings'))->getNode())
                         ->append((new RepositoriesNodeBuilder())->getNode())
+                        ->append((new SubDefinitionsNodeBuilder())->getNode())
                     ->end()
                 ->end()
             ->end();
@@ -55,10 +59,7 @@ class PhraseanetConfiguration implements ConfigurationInterface
     public function addOtherNodes(NodeBuilder $builder)
     {
         $builder
-            ->variableNode('cache')->end()
             ->variableNode('recorder')->end()
-            ->variableNode('repositories')->end()
-            ->variableNode('subdefs')->end()
             ->variableNode('thumbnails')->end();
     }
 }
