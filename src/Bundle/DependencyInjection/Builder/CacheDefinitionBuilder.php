@@ -2,6 +2,9 @@
 
 namespace Alchemy\PhraseanetBundle\DependencyInjection\Builder;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\FileCache;
+use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\Common\Cache\RedisCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Plugin\Cache\CachePlugin;
@@ -21,8 +24,14 @@ class CacheDefinitionBuilder
                 $definition = $this->buildRedisCache($cacheConfiguration);
                 break;
             case 'memcached':
+                $definition = $this->buildMemcachedCache($cacheConfiguration);
+                break;
             case 'array':
+                $definition = $this->buildArrayCache($cacheConfiguration);
+                break;
             case 'file':
+                $definition = $this->buildFileCache($cacheConfiguration);
+                break;
             default:
                 throw new \RuntimeException("Not implemented.");
         }
@@ -69,5 +78,31 @@ class CacheDefinitionBuilder
         $definition->addMethodCall('setRedis', [ $redisDefinition ]);
 
         return $definition;
+    }
+
+    private function buildMemcachedCache(array $cacheConfiguration)
+    {
+        $memcachedDefinition = new Definition(\Memcached::class);
+        $memcachedDefinition->addMethodCall('addServer', [
+            $cacheConfiguration['host'],
+            $cacheConfiguration['port']
+        ]);
+
+        $definition = new Definition(MemcachedCache::class);
+        $definition->addMethodCall('setMemcached', [ $memcachedDefinition ]);
+
+        return $definition;
+    }
+
+    private function buildArrayCache(array $cacheConfiguration)
+    {
+        return new Definition(ArrayCache::class);
+    }
+
+    private function buildFileCache(array $cacheConfiguration)
+    {
+        return new Definition(FileCache::class, [
+            $cacheConfiguration['path']
+        ]);
     }
 }

@@ -47,6 +47,7 @@ class PhraseanetConfiguration implements ConfigurationInterface
                                 ->scalarNode('token')->end()
                             ->end()
                         ->end()
+                        ->scalarNode('uploader')->end()
                         ->append((new CacheNodeBuilder())->getNode())
                         ->append((new MappingNodeBuilder('mappings'))->getNode())
                         ->append((new RepositoriesNodeBuilder())->getNode())

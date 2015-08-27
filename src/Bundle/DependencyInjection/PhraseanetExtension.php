@@ -100,10 +100,11 @@ class PhraseanetExtension extends ConfigurableExtension
     }
 
     /**
+     * @param string $instanceName
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function buildEntityRepositories(array $mergedConfig, ContainerBuilder $container)
+    protected function buildEntityRepositories($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
         foreach ($mergedConfig['repositories'] as $name => $repositoryKey) {
             $definition = new Definition(
@@ -111,29 +112,32 @@ class PhraseanetExtension extends ConfigurableExtension
                 array($repositoryKey)
             );
 
-            $definition->setFactoryService('phraseanet.em_factory')
-                ->setFactoryMethod('getRepository');
+            $definition->setFactory([
+                new Reference('phraseanet.factories.' . $name),
+                'getRepository'
+            ]);
 
             $container->setDefinition($name, $definition);
         }
     }
 
     /**
+     * @param string $instanceName
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function buildSdkHelpers(array $mergedConfig, ContainerBuilder $container)
+    protected function buildSdkHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
-        $container->setDefinition('phraseanet.feedhelper', new Definition(
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.feeds', new Definition(
             'Alchemy\Phraseanet\FeedHelper'
         ));
 
-        $container->setDefinition('phraseanet.metadatahelper', new Definition(
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.meta', new Definition(
             'Alchemy\Phraseanet\MetadataHelper',
             array($mergedConfig['mapping'], 'fr', 'fr',)
         ));
 
-        $container->setDefinition('phraseanet.thumbhelper', new Definition(
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.thumbs', new Definition(
             'Alchemy\Phraseanet\ThumbHelper',
             array($mergedConfig['thumbnails'])
         ));
