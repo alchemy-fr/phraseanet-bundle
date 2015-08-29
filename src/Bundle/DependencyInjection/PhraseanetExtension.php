@@ -2,10 +2,15 @@
 
 namespace Alchemy\PhraseanetBundle\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
+use Alchemy\Phraseanet\ApplicationTokenProvider;
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
+use Alchemy\Phraseanet\EntityManagerFactory;
+use Alchemy\Phraseanet\EntityManagerRegistry;
+use Alchemy\PhraseanetBundle\DependencyInjection\Builder\GuzzleAdapterBuilder;
+use PhraseanetSDK\Application;
+use PhraseanetSDK\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
@@ -16,6 +21,11 @@ class PhraseanetExtension extends ConfigurableExtension
         return new PhraseanetConfiguration();
     }
 
+    public function getAlias()
+    {
+        return 'phraseanet';
+    }
+
     /**
      * Configures the passed container according to the merged configuration.
      *
@@ -24,123 +34,77 @@ class PhraseanetExtension extends ConfigurableExtension
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
-        $this->loadServicesFromConfig($container);
+        $registry = new Definition(EntityManagerRegistry::class);
 
-        $this->buildSdkApplicationService($mergedConfig, $container);
-        $this->buildEntityManagerService($mergedConfig, $container);
-        $this->buildEntityRepositories($mergedConfig, $container);
-        $this->buildSdkHelpers($mergedConfig, $container);
+        foreach ($mergedConfig['instances'] as $name => $configuration) {
+            $factory = $this->buildEntityManagerFactory($container, $configuration);
+            $registry->addMethodCall('addEntityManagerFactory', [
+                $name,
+                $factory
+            ]);
 
-        $container->setParameter('phraseanet.subdefs', $mergedConfig['subdefs']);
-    }
+            $container->setDefinition('phraseanet.factories.' . $name, $factory);
 
-    public function getAlias()
-    {
-        return 'phraseanet';
-    }
+            $entityManager = new Definition(EntityManager::class, [ $name ]);
+            $entityManager->setFactory([
+                new Reference('phraseanet.factories.' . $name),
+                'getEntityManager'
+            ]);
 
-    /**
-     * @param ContainerBuilder $container
-     */
-    protected function loadServicesFromConfig(ContainerBuilder $container)
-    {
-        $loader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__ . '/../Resources/config')
-        );
+            $container->setDefinition('phraseanet.em.' . $name, $entityManager);
 
-        if ($container->getParameter('kernel.debug')) {
-            $loader->load('profiler.yml');
+            if ($name == $mergedConfig['default_instance']) {
+                $registry->addMethodCall('setDefaultEntityManager', [
+                    $mergedConfig['default_instance']
+                ]);
+
+                $container->setAlias('phraseanet.em', 'phraseanet.em.' . $name);
+            }
         }
 
-        $loader->load('services.yml');
+        $container->setDefinition('phraseanet.em_registry', $registry);
     }
 
-    /**
-     * @param array $mergedConfig
-     * @param ContainerBuilder $container
-     */
-    protected function buildSdkApplicationService(array $mergedConfig, ContainerBuilder $container)
+    protected function buildEntityManagerFactory(ContainerBuilder $container, array $configuration)
     {
-        $sdk = (new Definition('PhraseanetSDK\Application', array(
-            $this->buildHttpAdapterDefinition($mergedConfig, $container),
-            $mergedConfig['sdk']['client-id'],
-            $mergedConfig['sdk']['secret'],
-        )))
-            ->addMethodCall('setExtendedMode', array($mergedConfig['sdk']['extended-responses']));
-        $container->setDefinition('phraseanet.sdk', $sdk);
-    }
+        $adapterBuilder = new GuzzleAdapterBuilder();
 
-    /**
-     * @param array $mergedConfig
-     * @param ContainerBuilder $container
-     * @return Definition
-     */
-    protected function buildHttpAdapterDefinition(array $mergedConfig, ContainerBuilder $container)
-    {
-        $adapterParameters = array(
-            $mergedConfig['sdk']['url'],
-            $this->getPluginReferences($container)
-        );
+        $application = new Definition(Application::class, [
+            $adapterBuilder->buildDefinition($container, $configuration['connection']['url'], $configuration['cache']),
+            $configuration['connection']['client_id'],
+            $configuration['connection']['secret'],
+        ]);
 
-        $definition = new Definition(
-            'PhraseanetSDK\Http\GuzzleAdapter',
-            $adapterParameters
-        );
+        $application->addMethodCall('setExtendedMode', [ true ]);
 
-        $definition->setFactory('PhraseanetSDK\Http\GuzzleAdapter::create');
+        $tokenProvider = new Definition(ApplicationTokenProvider::class, [
+            $configuration['connection']['token']
+        ]);
 
-        return $definition;
-    }
+        $factory = new Definition(EntityManagerFactory::class, [
+            $application,
+            $tokenProvider
+        ]);
 
-    protected function getPluginReferences(ContainerBuilder $container)
-    {
-        $pluginIds = $container->findTaggedServiceIds('phraseanet.plugin');
-        $references = array();
-
-        foreach ($pluginIds as $pluginId => $tags) {
-            $references[] = new Reference($pluginId);
-        }
-
-        return $references;
-    }
-
-    /**
-     * @param array $mergedConfig
-     * @param ContainerBuilder $container
-     */
-    protected function buildEntityManagerService(array $mergedConfig, ContainerBuilder $container)
-    {
-        $entityManagerFactory = new Definition('Alchemy\PhraseanetBundle\Phraseanet\EntityManagerFactory', array(
-            new Reference('phraseanet.sdk'),
-            new Reference('security.token_storage'),
-            $mergedConfig['sdk']['token']
-        ));
-
-        $entityManagerFactory->addMethodCall(
+        $factory->addMethodCall(
             'setAnnotationCacheDirectory',
-            array($container->getParameter('kernel.cache_dir') . '/phraseanet/cache')
+            array($container->getParameter('kernel.cache_dir') . '/phraseanet/annotations')
         );
 
-        $entityManagerFactory->addMethodCall(
+        $factory->addMethodCall(
             'setProxyCacheDirectory',
             array($container->getParameter('kernel.cache_dir') . '/phraseanet/proxies')
         );
 
-        $entityManager = (new Definition('PhraseanetSDK\EntityManager', array(
-            $mergedConfig['sdk']['token']
-        )))
-            ->setFactory(array(new Reference('phraseanet.em_factory'), 'getEntityManager'));
-
-        $container->setDefinition('phraseanet.em_factory', $entityManagerFactory);
-        $container->setDefinition('phraseanet.em', $entityManager);
+        return $factory;
     }
 
     /**
+     * @param string $instanceName
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function buildEntityRepositories(array $mergedConfig, ContainerBuilder $container)
+    protected function buildEntityRepositories($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
         foreach ($mergedConfig['repositories'] as $name => $repositoryKey) {
             $definition = new Definition(
@@ -148,30 +112,33 @@ class PhraseanetExtension extends ConfigurableExtension
                 array($repositoryKey)
             );
 
-            $definition->setFactoryService('phraseanet.em_factory')
-                ->setFactoryMethod('getRepository');
+            $definition->setFactory([
+                new Reference('phraseanet.factories.' . $name),
+                'getRepository'
+            ]);
 
             $container->setDefinition($name, $definition);
         }
     }
 
     /**
+     * @param string $instanceName
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function buildSdkHelpers(array $mergedConfig, ContainerBuilder $container)
+    protected function buildSdkHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
-        $container->setDefinition('phraseanet.feedhelper', new Definition(
-            'Alchemy\Phraseanet\FeedHelper'
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.feeds', new Definition(
+            'Alchemy\Phraseanet\Helper\FeedHelper'
         ));
 
-        $container->setDefinition('phraseanet.metadatahelper', new Definition(
-            'Alchemy\Phraseanet\MetadataHelper',
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.meta', new Definition(
+            'Alchemy\Phraseanet\Helper\MetadataHelper',
             array($mergedConfig['mapping'], 'fr', 'fr',)
         ));
 
-        $container->setDefinition('phraseanet.thumbhelper', new Definition(
-            'Alchemy\Phraseanet\ThumbHelper',
+        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.thumbs', new Definition(
+            'Alchemy\Phraseanet\Helper\ThumbHelper',
             array($mergedConfig['thumbnails'])
         ));
     }

@@ -1,7 +1,8 @@
 <?php
 
-namespace Alchemy\Phraseanet;
+namespace Alchemy\Phraseanet\Helper;
 
+use Alchemy\Phraseanet\Mapping\FieldMap;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
 
@@ -61,7 +62,7 @@ class MetadataHelper
 
             $alias = $this->fieldsMap->getAliasFromFieldName($metadata->getName(), $locale);
 
-            if (! isset($fields[$alias])) {
+            if ($fields !== null && ! in_array($alias, $fields)) {
                 continue;
             }
 
@@ -84,7 +85,7 @@ class MetadataHelper
                 $map[$alias] = [ $map[$alias] ];
             }
 
-            $map[$alias] = [$map[$alias], $value];
+            $map[$alias][] = $value;
         } else {
             $map[$alias] = $value;
         }
@@ -113,7 +114,7 @@ class MetadataHelper
     public function getRecordMultiField(Record $record, $field, $locale = null)
     {
         if (! $this->fieldsMap->hasAlias($field, $locale)) {
-            return null;
+            return [];
         }
 
         $key = $this->fieldsMap->getFieldName($field, $locale);

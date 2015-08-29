@@ -1,8 +1,8 @@
 <?php
 
-namespace Alchemy\Phraseanet\Tests;
+namespace Alchemy\Phraseanet\Tests\Helper;
 
-use Alchemy\Phraseanet\FeedHelper;
+use Alchemy\Phraseanet\Helper\FeedHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\FeedEntryItem;

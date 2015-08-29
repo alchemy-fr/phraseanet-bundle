@@ -2,10 +2,10 @@
 
 namespace Alchemy\PhraseanetBundle\Twig;
 
-use Alchemy\Phraseanet\DefinitionMap;
-use Alchemy\Phraseanet\FeedHelper as FeedPdfHelper;
-use Alchemy\Phraseanet\MetadataHelper;
-use Alchemy\Phraseanet\ThumbHelper;
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
+use Alchemy\Phraseanet\Helper\FeedHelper as FeedPdfHelper;
+use Alchemy\Phraseanet\Helper\MetadataHelper;
+use Alchemy\Phraseanet\Helper\ThumbHelper;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
 
@@ -22,7 +22,7 @@ class PhraseanetExtension extends \Twig_Extension
     private $thumbFetcher;
 
     /**
-     * @var MetadataHelper
+     * @var \Alchemy\Phraseanet\Helper\MetadataHelper
      */
     private $metadataHelper;
 
@@ -57,14 +57,12 @@ class PhraseanetExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('record_caption', [ $this, 'getRecordCaption' ]),
             new \Twig_SimpleFunction('story_caption', [ $this, 'getStoryCaption' ]),
-            new \Twig_SimpleFunction('record_multi_caption', [ $this, 'getRecordMultiCaption' ]),
             new \Twig_SimpleFunction('fetch_thumbnail', [ $this, 'fetchThumbnail' ]),
             new \Twig_SimpleFunction('feed_entry_has_pdf_documents', [
                 $this->feedPdfHelper,
                 'entryContainsPdfDocuments'
             ])
         );
-
     }
 
     public function fetchThumbnail($record, $thumbType = 'medium')

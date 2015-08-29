@@ -1,6 +1,6 @@
 <?php
 
-namespace Alchemy\Phraseanet;
+namespace Alchemy\Phraseanet\Mapping;
 
 /**
  * Simple class to map friendly names to Phraseanet media sub-definitions.
