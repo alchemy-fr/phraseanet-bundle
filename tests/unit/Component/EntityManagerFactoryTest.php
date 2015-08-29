@@ -117,7 +117,7 @@ class EntityManagerFactoryTest extends \PHPUnit_Framework_TestCase
 
         $application->getEntityManager(
             Argument::exact($token),
-            Argument::exact([ 'annotation.path' => $vfs->url('/proxies') ])
+            Argument::exact([ 'annotation.path' => $vfs->url() . '/proxies/' ])
         )->willReturn($entityManager->reveal());
 
         $tokenProvider->getToken()->willReturn($token);
@@ -126,7 +126,7 @@ class EntityManagerFactoryTest extends \PHPUnit_Framework_TestCase
 
         $factory = new EntityManagerFactory($application->reveal(), $tokenProvider->reveal());
 
-        $factory->setAnnotationCacheDirectory($vfs->url('/proxies'));
+        $factory->setAnnotationCacheDirectory($vfs->url() . '/proxies/');
 
         $repository = $factory->getRepository('story');
 
