@@ -3,9 +3,14 @@
 namespace Alchemy\PhraseanetBundle\DependencyInjection;
 
 use Alchemy\Phraseanet\ApplicationTokenProvider;
+use Alchemy\Phraseanet\Helper\FeedHelper;
+use Alchemy\Phraseanet\Helper\InstanceHelper;
+use Alchemy\Phraseanet\Helper\MetadataHelper;
+use Alchemy\Phraseanet\Helper\ThumbHelper;
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
 use Alchemy\Phraseanet\EntityManagerFactory;
 use Alchemy\Phraseanet\EntityManagerRegistry;
+use Alchemy\Phraseanet\Mapping\FieldMap;
 use Alchemy\PhraseanetBundle\DependencyInjection\Builder\GuzzleAdapterBuilder;
 use PhraseanetSDK\Application;
 use PhraseanetSDK\EntityManager;
@@ -45,7 +50,7 @@ class PhraseanetExtension extends ConfigurableExtension
 
             $container->setDefinition('phraseanet.factories.' . $name, $factory);
 
-            $entityManager = new Definition(EntityManager::class, [ $name ]);
+            $entityManager = new Definition(EntityManager::class, [$name]);
             $entityManager->setFactory([
                 new Reference('phraseanet.factories.' . $name),
                 'getEntityManager'
@@ -60,6 +65,9 @@ class PhraseanetExtension extends ConfigurableExtension
 
                 $container->setAlias('phraseanet.em', 'phraseanet.em.' . $name);
             }
+
+            $this->buildEntityRepositories($name, $configuration, $container);
+            $this->buildInstanceHelpers($name, $configuration, $container);
         }
 
         $container->setDefinition('phraseanet.em_registry', $registry);
@@ -75,7 +83,7 @@ class PhraseanetExtension extends ConfigurableExtension
             $configuration['connection']['secret'],
         ]);
 
-        $application->addMethodCall('setExtendedMode', [ true ]);
+        $application->addMethodCall('setExtendedMode', [true]);
 
         $tokenProvider = new Definition(ApplicationTokenProvider::class, [
             $configuration['connection']['token']
@@ -113,7 +121,7 @@ class PhraseanetExtension extends ConfigurableExtension
             );
 
             $definition->setFactory([
-                new Reference('phraseanet.factories.' . $name),
+                new Reference('phraseanet.factories.' . $instanceName),
                 'getRepository'
             ]);
 
@@ -126,20 +134,25 @@ class PhraseanetExtension extends ConfigurableExtension
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function buildSdkHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
+    protected function buildInstanceHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
-        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.feeds', new Definition(
-            'Alchemy\Phraseanet\Helper\FeedHelper'
-        ));
+        $baseKey = 'phraseanet.helpers.' . $instanceName;
 
-        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.meta', new Definition(
-            'Alchemy\Phraseanet\Helper\MetadataHelper',
-            array($mergedConfig['mapping'], 'fr', 'fr',)
-        ));
+        $container->setDefinition($baseKey . '.feeds', new Definition(FeedHelper::class));
+        $container->setDefinition($baseKey . '.meta', new Definition(MetadataHelper::class, [
+            new Definition(FieldMap::class, [$mergedConfig['mappings']]),
+            'fr',
+            'fr'
+        ]));
 
-        $container->setDefinition('phraseanet.helpers.' . $instanceName . '.thumbs', new Definition(
-            'Alchemy\Phraseanet\Helper\ThumbHelper',
-            array($mergedConfig['thumbnails'])
-        ));
+        $container->setDefinition($baseKey . '.thumbs', new Definition(ThumbHelper::class, [
+            new Definition(DefinitionMap::class, $mergedConfig['thumbnails'])
+        ]));
+
+        $container->setDefinition($baseKey, new Definition(InstanceHelper::class, [
+            new Reference($baseKey . '.feeds'),
+            new Reference($baseKey . '.meta'),
+            new Reference($baseKey . '.thumbs')
+        ]));
     }
 }
