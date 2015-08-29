@@ -25,7 +25,6 @@ class PhraseanetConfiguration implements ConfigurationInterface
         $nodeBuilder = $root->children();
 
         $this->addSdkNode($nodeBuilder);
-        $this->addOtherNodes($nodeBuilder);
 
         return $builder;
     }
@@ -51,16 +50,10 @@ class PhraseanetConfiguration implements ConfigurationInterface
                         ->append((new CacheNodeBuilder())->getNode())
                         ->append((new MappingNodeBuilder('mappings'))->getNode())
                         ->append((new RepositoriesNodeBuilder())->getNode())
-                        ->append((new SubDefinitionsNodeBuilder())->getNode())
+                        ->append((new SubDefinitionsNodeBuilder('subdefinitions'))->getNode())
+                        ->append((new SubDefinitionsNodeBuilder('thumbnails'))->getNode())
                     ->end()
                 ->end()
             ->end();
-    }
-
-    public function addOtherNodes(NodeBuilder $builder)
-    {
-        $builder
-            ->variableNode('recorder')->end()
-            ->variableNode('thumbnails')->end();
     }
 }

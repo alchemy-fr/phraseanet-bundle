@@ -7,6 +7,14 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class SubDefinitionsNodeBuilder implements ConfigurationInterface
 {
+
+    private $name;
+
+    public function __construct($rootName = 'subdefinitions')
+    {
+        $this->name = $rootName;
+    }
+
     /**
      * Generates the configuration tree builder.
      *
@@ -24,7 +32,7 @@ class SubDefinitionsNodeBuilder implements ConfigurationInterface
     public function getNode(TreeBuilder $builder = null)
     {
         $builder = $builder ?: new TreeBuilder();
-        $node = $builder->root('subdefinitions');
+        $node = $builder->root($this->name);
 
         $node
             ->useAttributeAsKey('name')
