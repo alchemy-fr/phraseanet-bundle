@@ -3,7 +3,7 @@
 namespace Alchemy\PhraseanetBundle\DependencyInjection;
 
 use Alchemy\Phraseanet\ApplicationTokenProvider;
-use Alchemy\Phraseanet\DefinitionMap;
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
 use Alchemy\Phraseanet\EntityManagerFactory;
 use Alchemy\Phraseanet\EntityManagerRegistry;
 use Alchemy\PhraseanetBundle\DependencyInjection\Builder\GuzzleAdapterBuilder;
@@ -129,16 +129,16 @@ class PhraseanetExtension extends ConfigurableExtension
     protected function buildSdkHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
     {
         $container->setDefinition('phraseanet.helpers.' . $instanceName . '.feeds', new Definition(
-            'Alchemy\Phraseanet\FeedHelper'
+            'Alchemy\Phraseanet\Helper\FeedHelper'
         ));
 
         $container->setDefinition('phraseanet.helpers.' . $instanceName . '.meta', new Definition(
-            'Alchemy\Phraseanet\MetadataHelper',
+            'Alchemy\Phraseanet\Helper\MetadataHelper',
             array($mergedConfig['mapping'], 'fr', 'fr',)
         ));
 
         $container->setDefinition('phraseanet.helpers.' . $instanceName . '.thumbs', new Definition(
-            'Alchemy\Phraseanet\ThumbHelper',
+            'Alchemy\Phraseanet\Helper\ThumbHelper',
             array($mergedConfig['thumbnails'])
         ));
     }

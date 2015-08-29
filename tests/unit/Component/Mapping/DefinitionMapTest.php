@@ -1,8 +1,8 @@
 <?php
 
-namespace Alchemy\Phraseanet\Tests;
+namespace Alchemy\Phraseanet\Tests\Mapping;
 
-use Alchemy\Phraseanet\DefinitionMap;
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
 
 class DefinitionMapTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,6 +19,20 @@ class DefinitionMapTest extends \PHPUnit_Framework_TestCase
         $map = new DefinitionMap(array('bacon' => 'high-res'));
 
         $this->assertEquals('high-res', $map->getSubDefinition('bacon'));
+    }
+
+    public function testHasDefinitionReturnsTrueWhenDefinitionIsMapped()
+    {
+        $map = new DefinitionMap(array('bacon' => 'high-res'));
+
+        $this->assertTrue($map->hasSubDefinition('bacon'));
+    }
+
+    public function testHasDefinitionReturnsFalseWhenDefinitionIsNotMapped()
+    {
+        $map = new DefinitionMap(array('bacon' => 'high-res'));
+
+        $this->assertFalse($map->hasSubDefinition('milk'));
     }
 
     /**

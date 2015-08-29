@@ -1,8 +1,8 @@
 <?php
 
-namespace Alchemy\Phraseanet\Tests;
+namespace Alchemy\Phraseanet\Tests\Mapping;
 
-use Alchemy\Phraseanet\FieldMap;
+use Alchemy\Phraseanet\Mapping\FieldMap;
 
 class FieldMapTest extends \PHPUnit_Framework_TestCase
 {

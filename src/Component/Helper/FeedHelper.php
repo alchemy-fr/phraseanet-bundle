@@ -1,6 +1,6 @@
 <?php
 
-namespace Alchemy\Phraseanet;
+namespace Alchemy\Phraseanet\Helper;
 
 use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\FeedEntryItem;

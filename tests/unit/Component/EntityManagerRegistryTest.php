@@ -12,7 +12,7 @@ use Prophecy\Argument;
 class EntityManagerRegistryTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testGetDefaultEntityManager()
+    public function testGetEntityManagerByKeyReturnsCorrectInstance()
     {
         $token = uniqid('bacon');
 
@@ -31,4 +31,46 @@ class EntityManagerRegistryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($entityManager, $registry->getEntityManager('bacon'));
     }
+
+    public function testGetDefaultEntityManagerReturnsCorrectInstance()
+    {
+        $token = uniqid('bacon');
+
+        $tokenProvider = $this->prophesize(TokenProvider::class);
+        $tokenProvider->getToken()->willReturn($token);
+
+        $entityManager = $this->prophesize(EntityManager::class)->reveal();
+
+        $application = $this->prophesize(Application::class);
+        $application->getEntityManager(Argument::exact($token), Argument::any())->willReturn($entityManager);
+
+        $registry = new EntityManagerRegistry();
+        $factory = new EntityManagerFactory($application->reveal(), $tokenProvider->reveal());
+
+        $registry->addEntityManagerFactory('bacon', $factory);
+        $registry->setDefaultEntityManager('bacon');
+
+        $this->assertEquals($entityManager, $registry->getDefaultEntityManager());
+    }
+
+    public function testGetDefaultEntityManagerReturnsFirstInstanceWhenDefaultIsNotSet()
+    {
+        $token = uniqid('bacon');
+
+        $tokenProvider = $this->prophesize(TokenProvider::class);
+        $tokenProvider->getToken()->willReturn($token);
+
+        $entityManager = $this->prophesize(EntityManager::class)->reveal();
+
+        $application = $this->prophesize(Application::class);
+        $application->getEntityManager(Argument::exact($token), Argument::any())->willReturn($entityManager);
+
+        $registry = new EntityManagerRegistry();
+        $factory = new EntityManagerFactory($application->reveal(), $tokenProvider->reveal());
+
+        $registry->addEntityManagerFactory('bacon', $factory);
+
+        $this->assertEquals($entityManager, $registry->getDefaultEntityManager());
+    }
+
 }

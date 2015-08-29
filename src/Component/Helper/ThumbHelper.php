@@ -1,7 +1,8 @@
 <?php
 
-namespace Alchemy\Phraseanet;
+namespace Alchemy\Phraseanet\Helper;
 
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
 

@@ -5,7 +5,7 @@ parameters:
 services:
 
   phraseanet.definitionMap:
-    class: Alchemy\Phraseanet\DefinitionMap
+    class: Alchemy\Phraseanet\Mapping\DefinitionMap
     arguments:
       - %api.definitions%
 
