@@ -38,7 +38,7 @@ class ThumbHelper
             throw new \InvalidArgumentException();
         }
 
-        if (! $this->thumbnailMap->hasSubDefinition($type)) {
+        if (! $this->thumbnailMap->hasSubDefinition($type) || $record instanceof Story) {
             return $record->getThumbnail();
         }
 
