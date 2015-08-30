@@ -131,7 +131,7 @@ class EntityManagerFactory
     private function ensureDirectoryExists($path)
     {
         if (!file_exists($path)) {
-            mkdir($path);
+            mkdir($path, 755, true);
         }
     }
 

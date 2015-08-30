@@ -5,6 +5,7 @@ namespace Alchemy\PhraseanetBundle\DependencyInjection;
 use Alchemy\Phraseanet\ApplicationTokenProvider;
 use Alchemy\Phraseanet\Helper\FeedHelper;
 use Alchemy\Phraseanet\Helper\InstanceHelper;
+use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
 use Alchemy\Phraseanet\Helper\MetadataHelper;
 use Alchemy\Phraseanet\Helper\ThumbHelper;
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
@@ -14,8 +15,10 @@ use Alchemy\Phraseanet\Mapping\FieldMap;
 use Alchemy\PhraseanetBundle\DependencyInjection\Builder\GuzzleAdapterBuilder;
 use PhraseanetSDK\Application;
 use PhraseanetSDK\EntityManager;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
@@ -39,7 +42,14 @@ class PhraseanetExtension extends ConfigurableExtension
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
+        $locator = new FileLocator(__DIR__ . '/../Resources/config');
+        $loader = new YamlFileLoader($container, $locator);
+
+        $loader->load('services.yml');
+        $loader->load('profiler.yml');
+
         $registry = new Definition(EntityManagerRegistry::class);
+        $helperRegistry = new Definition(InstanceHelperRegistry::class);
 
         foreach ($mergedConfig['instances'] as $name => $configuration) {
             $factory = $this->buildEntityManagerFactory($container, $configuration);
@@ -64,13 +74,15 @@ class PhraseanetExtension extends ConfigurableExtension
                 ]);
 
                 $container->setAlias('phraseanet.em', 'phraseanet.em.' . $name);
+                $container->setAlias('phraseanet.helpers', 'phraseanet.helpers.' . $name);
             }
 
             $this->buildEntityRepositories($name, $configuration, $container);
-            $this->buildInstanceHelpers($name, $configuration, $container);
+            $this->buildInstanceHelpers($name, $configuration, $container, $helperRegistry);
         }
 
         $container->setDefinition('phraseanet.em_registry', $registry);
+        $container->setDefinition('phraseanet.helper_registry', $helperRegistry);
     }
 
     protected function buildEntityManagerFactory(ContainerBuilder $container, array $configuration)
@@ -133,9 +145,14 @@ class PhraseanetExtension extends ConfigurableExtension
      * @param string $instanceName
      * @param array $mergedConfig
      * @param ContainerBuilder $container
+     * @param Definition $registry
      */
-    protected function buildInstanceHelpers($instanceName, array $mergedConfig, ContainerBuilder $container)
-    {
+    protected function buildInstanceHelpers(
+        $instanceName,
+        array $mergedConfig,
+        ContainerBuilder $container,
+        Definition $registry
+    ) {
         $baseKey = 'phraseanet.helpers.' . $instanceName;
 
         $container->setDefinition($baseKey . '.feeds', new Definition(FeedHelper::class));
@@ -145,14 +162,26 @@ class PhraseanetExtension extends ConfigurableExtension
             'fr'
         ]));
 
+        $container->setDefinition($baseKey . '.definitions', new Definition(DefinitionMap::class, [
+            $mergedConfig['subdefinitions']
+        ]));
+
+        var_dump($mergedConfig['subdefinitions']);
+
         $container->setDefinition($baseKey . '.thumbs', new Definition(ThumbHelper::class, [
-            new Definition(DefinitionMap::class, $mergedConfig['thumbnails'])
+            new Definition(DefinitionMap::class, [ $mergedConfig['thumbnails'] ])
         ]));
 
         $container->setDefinition($baseKey, new Definition(InstanceHelper::class, [
+            new Reference($baseKey . '.definitions'),
             new Reference($baseKey . '.feeds'),
             new Reference($baseKey . '.meta'),
             new Reference($baseKey . '.thumbs')
         ]));
+
+        $registry->addMethodCall('addHelper', [
+            $instanceName,
+            new Reference($baseKey)
+        ]);
     }
 }

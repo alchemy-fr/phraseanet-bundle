@@ -2,12 +2,19 @@
 
 namespace Alchemy\Phraseanet\Helper;
 
+use Alchemy\Phraseanet\Mapping\DefinitionMap;
+
 /**
  * Class InstanceHelper acts as a helper registry for a given instance.
  * @package Alchemy\Phraseanet\Helper
  */
 class InstanceHelper
 {
+    /**
+     * @var DefinitionMap
+     */
+    private $definitionMap;
+
     /**
      * @var FeedHelper
      */
@@ -23,8 +30,13 @@ class InstanceHelper
      */
     private $thumbHelper;
 
-    public function __construct(FeedHelper $feedHelper, MetadataHelper $metadataHelper, ThumbHelper $thumbHelper)
-    {
+    public function __construct(
+        DefinitionMap $definitionMap,
+        FeedHelper $feedHelper,
+        MetadataHelper $metadataHelper,
+        ThumbHelper $thumbHelper
+    ) {
+        $this->definitionMap = $definitionMap;
         $this->feedHelper = $feedHelper;
         $this->metadataHelper = $metadataHelper;
         $this->thumbHelper = $thumbHelper;

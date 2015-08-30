@@ -7,6 +7,9 @@ class InstanceHelperRegistry
 
     private $defaultInstance = null;
 
+    /**
+     * @var InstanceHelper[]
+     */
     private $instanceHelpers = [];
 
     public function addHelper($name, InstanceHelper $helper)
@@ -21,8 +24,12 @@ class InstanceHelperRegistry
 
     public function getHelper($name)
     {
+        if ($name == null) {
+            return $this->getDefaultHelper();
+        }
+
         if (! $this->hasHelper($name)) {
-            throw new \OutOfBoundsException();
+            throw new \OutOfBoundsException("Helper '$name' is not defined.");
         }
 
         return $this->instanceHelpers[$name];
