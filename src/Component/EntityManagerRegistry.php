@@ -14,19 +14,19 @@ class EntityManagerRegistry
      */
     private $defaultManager = null;
 
-    public function addEntityManagerFactory($alias, EntityManagerFactory $factory)
+    public function addEntityManagerFactory($instanceAlias, EntityManagerFactory $factory)
     {
-        $this->factories[$alias] = $factory;
+        $this->factories[$instanceAlias] = $factory;
     }
 
-    public function setDefaultEntityManager($alias)
+    public function setDefaultEntityManager($instanceAlias)
     {
-        $this->defaultManager = $alias;
+        $this->defaultManager = $instanceAlias;
     }
 
-    public function getEntityManager($alias)
+    public function getEntityManager($instanceAlias)
     {
-        return $this->factories[$alias]->getEntityManager();
+        return $this->factories[$instanceAlias]->getEntityManager();
     }
 
     public function getDefaultEntityManager()
@@ -36,5 +36,10 @@ class EntityManagerRegistry
         }
 
         return $this->getEntityManager($this->defaultManager);
+    }
+
+    public function getRepository($instanceAlias, $name)
+    {
+        return $this->getEntityManager($instanceAlias)->getRepository($name);
     }
 }
