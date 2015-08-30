@@ -166,8 +166,6 @@ class PhraseanetExtension extends ConfigurableExtension
             $mergedConfig['subdefinitions']
         ]));
 
-        var_dump($mergedConfig['subdefinitions']);
-
         $container->setDefinition($baseKey . '.thumbs', new Definition(ThumbHelper::class, [
             new Definition(DefinitionMap::class, [ $mergedConfig['thumbnails'] ])
         ]));
