@@ -42,6 +42,11 @@ class InstanceHelper
         $this->thumbHelper = $thumbHelper;
     }
 
+    public function getDefinitionMap()
+    {
+        return $this->definitionMap;
+    }
+
     public function getFeedHelper()
     {
         return $this->feedHelper;

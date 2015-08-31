@@ -24,8 +24,12 @@ class EntityManagerRegistry
         $this->defaultManager = $instanceAlias;
     }
 
-    public function getEntityManager($instanceAlias)
+    public function getEntityManager($instanceAlias = null)
     {
+        if ($instanceAlias == null) {
+            return $this->getDefaultEntityManager();
+        }
+
         return $this->factories[$instanceAlias]->getEntityManager();
     }
 

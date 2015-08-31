@@ -3,6 +3,7 @@
 namespace Alchemy\PhraseanetBundle\Twig;
 
 use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
+use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
 
@@ -21,8 +22,6 @@ class PhraseanetExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'subdefs' => new \Twig_Filter_Method($this, 'subdefs'),
-            'preview_subdefs' => new \Twig_Filter_Method($this, 'previewSubdefs'),
             'file_extension' => new \Twig_Filter_Method($this, 'extension'),
         ];
     }
@@ -30,6 +29,7 @@ class PhraseanetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
+            new \Twig_SimpleFunction('record_hash', [ $this, 'getRecordHash' ]),
             new \Twig_SimpleFunction('record_caption', [$this, 'getRecordCaption']),
             new \Twig_SimpleFunction('story_caption', [$this, 'getStoryCaption']),
             new \Twig_SimpleFunction('fetch_thumbnail', [$this, 'fetchThumbnail']),
@@ -42,6 +42,11 @@ class PhraseanetExtension extends \Twig_Extension
         $thumbFetcher = $this->helpers->getHelper($instanceName)->getThumbHelper();
 
         return $thumbFetcher->fetch($record, $thumbType);
+    }
+
+    public function getRecordHash(Record $record, $instanceName = null)
+    {
+        return base64_encode(sprintf('%s_%s_%s', $instanceName, $record->getDataboxId(), $record->getRecordId()));
     }
 
     public function getRecordCaption(Record $record, $field, $locale = null, $instanceName = null)
@@ -65,35 +70,11 @@ class PhraseanetExtension extends \Twig_Extension
         return $metadataHelper->getRecordMultiField($record, $field, $locale);
     }
 
-    public function previewSubdefs(Record $record, array $names)
+    public function entryContainsPdfDocuments(FeedEntry $feedEntry, $name = null)
     {
-        return $this->subdefs($record, $names, 'preview');
-    }
+        $feedHelper = $this->helpers->getHelper($name)->getFeedHelper();
 
-    public function subdefs(Record $record, array $names, $prefix = null)
-    {
-        $defsByName = array();
-        $subdefs = array();
-
-        foreach ($record->getSubdefs() as $subdef) {
-            $defsByName[$subdef->getName()] = $subdef;
-        }
-
-        foreach ($names as $name) {
-            $fullName = $prefix ? $prefix . '_' . $name : $name;
-
-            if (!isset($this->subdefsMap[$fullName])) {
-                throw new \RuntimeException('Subdef "' . $fullName . '" is not configured.');
-            }
-
-            $defName = $this->subdefsMap[$fullName];
-
-            if (isset($defsByName[$defName])) {
-                $subdefs[$name] = $defsByName[$defName];
-            }
-        }
-
-        return $subdefs;
+        return $feedHelper->entryContainsPdfDocuments($feedEntry);
     }
 
     public function extension($name)

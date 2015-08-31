@@ -5,6 +5,7 @@ namespace Alchemy\PhraseanetBundle\DependencyInjection\Builder;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\FileCache;
 use Doctrine\Common\Cache\MemcachedCache;
+use Doctrine\Common\Cache\PhpFileCache;
 use Doctrine\Common\Cache\RedisCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Plugin\Cache\CachePlugin;
@@ -101,7 +102,7 @@ class CacheDefinitionBuilder
 
     private function buildFileCache(array $cacheConfiguration)
     {
-        return new Definition(FileCache::class, [
+        return new Definition(PhpFileCache::class, [
             $cacheConfiguration['path']
         ]);
     }
