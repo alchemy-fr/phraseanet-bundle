@@ -10,6 +10,7 @@ use Alchemy\Phraseanet\Mapping\DefinitionMap;
  */
 class InstanceHelper
 {
+
     /**
      * @var DefinitionMap
      */

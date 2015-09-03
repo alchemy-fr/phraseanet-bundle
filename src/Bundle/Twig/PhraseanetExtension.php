@@ -19,13 +19,6 @@ class PhraseanetExtension extends \Twig_Extension
         $this->helpers = $helpers;
     }
 
-    public function getFilters()
-    {
-        return [
-            'file_extension' => new \Twig_Filter_Method($this, 'extension'),
-        ];
-    }
-
     public function getFunctions()
     {
         return array(
@@ -75,11 +68,6 @@ class PhraseanetExtension extends \Twig_Extension
         $feedHelper = $this->helpers->getHelper($name)->getFeedHelper();
 
         return $feedHelper->entryContainsPdfDocuments($feedEntry);
-    }
-
-    public function extension($name)
-    {
-        return strtolower(pathinfo($name, PATHINFO_EXTENSION));
     }
 
     public function getName()

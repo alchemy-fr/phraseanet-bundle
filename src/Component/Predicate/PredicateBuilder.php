@@ -91,6 +91,13 @@ class PredicateBuilder
         return $this;
     }
 
+    public function endAllGroups()
+    {
+        while ($this->predicateStack->count() > 1) {
+            $this->endGroup();
+        }
+    }
+
     public function getPredicate()
     {
         $predicate = $this->predicateStack->bottom()

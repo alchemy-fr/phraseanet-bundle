@@ -36,9 +36,34 @@ class MetadataHelper
         $this->fallbackLocale = $fallbackLocale;
     }
 
+    public function getFieldAlias($fieldName, $locale = null)
+    {
+        if ($locale == null) {
+            $locale =  $this->defaultLocale;
+        }
+
+        if (! $this->fieldsMap->isFieldMapped($fieldName, $locale)) {
+            if ($locale !== $this->defaultLocale) {
+                return $this->getFieldAlias($fieldName, $this->defaultLocale);
+            }
+
+            throw new \RuntimeException("No alias is available for field '$fieldName'.");
+        }
+
+        return $this->fieldsMap->getAliasFromFieldName($fieldName, $locale);
+    }
+
     public function getStoryField(Story $story, $field, $locale = null)
     {
+        if ($locale == null) {
+            $locale = $this->defaultLocale;
+        }
+
         if (! $this->fieldsMap->hasAlias($field, $locale)) {
+            if ($locale !== $this->defaultLocale) {
+                return $this->getStoryField($story, $field, $this->defaultLocale);
+            }
+
             return '';
         }
 
@@ -49,10 +74,20 @@ class MetadataHelper
                 return $captionField->getValue();
             }
         }
+
+        if ($locale !== $this->defaultLocale) {
+            return $this->getStoryField($story, $field, $this->defaultLocale);
+        }
+
+        return '';
     }
 
     public function getRecordFields(Record $record, array $fields = null, $locale = null)
     {
+        if ($locale == null) {
+            $locale = $this->defaultLocale;
+        }
+
         $map = [];
 
         foreach ($record->getMetadata() as $metadata) {
@@ -95,6 +130,10 @@ class MetadataHelper
 
     public function getRecordField(Record $record, $field, $locale = null)
     {
+        if ($locale == null) {
+            $locale = $this->defaultLocale;
+        }
+
         if (! $this->fieldsMap->hasAlias($field, $locale)) {
             return null;
         }

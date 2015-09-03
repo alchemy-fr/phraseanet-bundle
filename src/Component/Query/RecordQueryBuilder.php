@@ -255,7 +255,9 @@ class RecordQueryBuilder
         );
 
         if (! in_array($recordType, $allowedTypes, true)) {
-            throw new \InvalidArgumentException('Record type must be one of the RECORD_TYPE_* values');
+            throw new \InvalidArgumentException(
+                sprintf('Record type must be one of the RECORD_TYPE_* values, %s given.', $recordType)
+            );
         }
 
         $this->recordType = $recordType;
