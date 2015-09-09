@@ -24,10 +24,10 @@ class ThumbHelperTest extends \PHPUnit_Framework_TestCase
     {
         $thumbHelper = new ThumbHelper(new DefinitionMap());
 
-        $record = new Record();
-        $record->setThumbnail(new Subdef());
+        $record = $this->prophesize('PhraseanetSDK\Entity\Record');
+        $record->getThumbnail()->willReturn(new Subdef(new \stdClass));
 
-        $this->assertSame($record->getThumbnail(), $thumbHelper->fetch($record, 'unmapped'));
+        $this->assertSame($record->reveal()->getThumbnail(), $thumbHelper->fetch($record->reveal(), 'unmapped'));
     }
 
     public function testFetchMappedThumbnailDefinitionReturnsMatchSubdefinition()
@@ -35,16 +35,16 @@ class ThumbHelperTest extends \PHPUnit_Framework_TestCase
         $definitionMap = new DefinitionMap([ 'high' => 'my_subdef' ]);
         $thumbHelper = new ThumbHelper($definitionMap);
 
-        $thumbnail = new Subdef();
-        $mySubdef = new Subdef();
+        $thumbnail = new Subdef(new \stdClass());
+        $mySubdef = new Subdef(new \stdClass);
 
-        $record = new Record();
-        $record->setSubdefs(new ArrayCollection([
+        $record = $this->prophesize('PhraseanetSDK\Entity\Record');
+        $record->getSubdefs()->willReturn(new ArrayCollection([
             'thumbnail' => $thumbnail,
             'my_subdef' => $mySubdef
         ]));
 
-        $this->assertSame($mySubdef, $thumbHelper->fetch($record, 'high'));
+        $this->assertSame($mySubdef, $thumbHelper->fetch($record->reveal(), 'high'));
     }
 
     public function testFetchMissingSubdefinitionReturnsDefaultThumbnail()
@@ -52,15 +52,15 @@ class ThumbHelperTest extends \PHPUnit_Framework_TestCase
         $definitionMap = new DefinitionMap([ 'low' => 'missing_subdef' ]);
         $thumbHelper = new ThumbHelper($definitionMap);
 
-        $thumbnail = new Subdef();
-        $mySubdef = new Subdef();
+        $thumbnail = new Subdef(new \stdClass());
+        $mySubdef = new Subdef(new \stdClass());
 
-        $record = new Record();
-        $record->setThumbnail($thumbnail);
-        $record->setSubdefs(new ArrayCollection([
+        $record = $this->prophesize('PhraseanetSDK\Entity\Record');
+        $record->getThumbnail()->willReturn($thumbnail);
+        $record->getSubdefs()->willReturn(new ArrayCollection([
             'my_subdef' => $mySubdef
         ]));
 
-        $this->assertSame($thumbnail, $thumbHelper->fetch($record, 'low'));
+        $this->assertSame($thumbnail, $thumbHelper->fetch($record->reveal(), 'low'));
     }
 }
