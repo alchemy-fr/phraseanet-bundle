@@ -12,29 +12,25 @@ class FeedHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function getFeedEntryItems()
     {
-        $firstRecord = new Record();
-        $firstRecord->setMimeType('application/pdf');
+        $firstData = new \stdClass();
+        $firstData->item_id = 0;
+        $firstData->record = new \stdClass();
+        $firstData->record->mime_type = 'application/pdf';
 
-        $secondRecord = new Record();
-        $secondRecord->setMimeType('text/plain');
+        $secondData = new \stdClass();
+        $secondData->item_id = 1;
+        $secondData->record = new \stdClass();
+        $secondData->record->mime_type = 'text/plain';
 
-        $first = new FeedEntryItem();
-        $second = new FeedEntryItem();
-
-        $first->setRecord($firstRecord);
-        $second->setRecord($secondRecord);
-
-        return new ArrayCollection([
-            $first,
-            $second
-        ]);
+        return [ $firstData, $secondData ];
     }
 
     public function testHelperReturnsPdfItemsFromFeed()
     {
-        $feedEntry = new FeedEntry();
-        $feedEntry->setItems($this->getFeedEntryItems());
+        $feedData = new \stdClass();
+        $feedData->items = $this->getFeedEntryItems();
 
+        $feedEntry = new FeedEntry($feedData);
         $helper = new FeedHelper();
 
         $this->assertTrue($helper->entryContainsPdfDocuments($feedEntry));
