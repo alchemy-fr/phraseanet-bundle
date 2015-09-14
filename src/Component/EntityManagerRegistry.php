@@ -46,4 +46,9 @@ class EntityManagerRegistry
     {
         return $this->getEntityManager($instanceAlias)->getRepository($name);
     }
+
+    public function getDefaultRepository($name)
+    {
+        return $this->getDefaultEntityManager()->getRepository($name);
+    }
 }
