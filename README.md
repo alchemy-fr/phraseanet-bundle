@@ -18,7 +18,7 @@ composer require alchemy/phraseanet-bundle
 
 Using the bundle, you can define one or more Phraseanet instances. Each instance is exposed as an entity manager.
 
-```
+```yaml
 phraseanet:
     default_instance: default
     instances:
