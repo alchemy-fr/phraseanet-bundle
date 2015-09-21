@@ -3,6 +3,7 @@
 namespace Alchemy\PhraseanetBundle\DependencyInjection;
 
 use Alchemy\Phraseanet\ApplicationTokenProvider;
+use Alchemy\Phraseanet\ChainedTokenProvider;
 use Alchemy\Phraseanet\Helper\FeedHelper;
 use Alchemy\Phraseanet\Helper\InstanceHelper;
 use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
@@ -97,9 +98,15 @@ class PhraseanetExtension extends ConfigurableExtension
 
         $application->addMethodCall('setExtendedMode', [true]);
 
-        $tokenProvider = new Definition(ApplicationTokenProvider::class, [
+        $tokenProvider = new Definition(ChainedTokenProvider::class);
+
+        $applicationTokenProvider = new Definition(ApplicationTokenProvider::class, [
             $configuration['connection']['token']
         ]);
+
+        $tokenProvider->addMethodCall('setDefaultProvider', [ $applicationTokenProvider ]);
+
+        $container->setDefinition('phraseanet.token_provider', $tokenProvider);
 
         $factory = new Definition(EntityManagerFactory::class, [
             $application,
