@@ -36,6 +36,22 @@ class MetadataHelper
         $this->fallbackLocale = $fallbackLocale;
     }
 
+    public function getFieldName($alias, $locale = null)
+    {
+        if ($locale === null) {
+            $locale = $this->defaultLocale;
+        }
+
+        try {
+            return $this->fieldsMap->getFieldName($alias, $locale);
+        }
+        catch (\OutOfBoundsException $exception) {
+            if ($locale !== $this->defaultLocale) {
+                return $this->getFieldName($alias, $this->defaultLocale);
+            }
+        }
+    }
+
     public function getFieldAlias($fieldName, $locale = null)
     {
         if ($locale == null) {
