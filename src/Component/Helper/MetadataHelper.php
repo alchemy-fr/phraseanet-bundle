@@ -52,14 +52,20 @@ class MetadataHelper
         }
     }
 
-    public function getFieldAlias($fieldName, $locale = null)
+    /**
+     * @param $fieldName
+     * @param null $locale
+     * @param bool $fallback Whether the lookup should fallback to the default locale
+     * @return string
+     */
+    public function getFieldAlias($fieldName, $locale = null, $fallback = true)
     {
         if ($locale == null) {
             $locale =  $this->defaultLocale;
         }
 
         if (! $this->fieldsMap->isFieldMapped($fieldName, $locale)) {
-            if ($locale !== $this->defaultLocale) {
+            if ($locale !== $this->defaultLocale && $fallback) {
                 return $this->getFieldAlias($fieldName, $this->defaultLocale);
             }
 
