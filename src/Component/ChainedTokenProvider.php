@@ -13,7 +13,7 @@ class ChainedTokenProvider implements TokenProvider
     /**
      * @var TokenProvider[]
      */
-    private $providers;
+    private $providers = array();
 
     public function addProvider(TokenProvider $provider)
     {
