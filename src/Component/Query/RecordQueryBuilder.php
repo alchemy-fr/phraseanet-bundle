@@ -214,7 +214,7 @@ class RecordQueryBuilder
         );
 
         if (! in_array($sort, $allowedSorts, true)) {
-            throw new \InvalidArgumentException('Invalid sort type: ' . $sort);
+            //throw new \InvalidArgumentException('Invalid sort type: ' . $sort);
         }
 
         $this->sortType = (string) $sort;
