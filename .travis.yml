@@ -10,7 +10,7 @@ git:
 matrix:
   fast_finish: true
 before_install:
-  - phpenv config-rm xdebug.ini
+  - if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') -ne 'hhvm' ]; then phpenv config-rm xdebug.ini; fi
   - composer self-update --no-progress --no-interaction
 install:
   - make deps
