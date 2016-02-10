@@ -207,16 +207,6 @@ class RecordQueryBuilder
      */
     public function sortBy($sort, $descending = false)
     {
-        $allowedSorts = array(
-            self::SORT_CREATED_ON,
-            self::SORT_RANDOM,
-            self::SORT_RELEVANCE
-        );
-
-        if (! in_array($sort, $allowedSorts, true)) {
-            //throw new \InvalidArgumentException('Invalid sort type: ' . $sort);
-        }
-
         $this->sortType = (string) $sort;
         $this->sortDescending = (bool) $descending;
 
