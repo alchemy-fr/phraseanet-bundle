@@ -63,24 +63,25 @@ class MetadataHelper
             $locale = $this->defaultLocale;
         }
 
-        if (!$this->fieldsMap->isFieldMapped($fieldName, $locale)) {
-            if ($locale !== $this->defaultLocale && $fallback) {
-                return $this->getFieldAlias($fieldName, $this->defaultLocale);
-            }
-
-            throw new \RuntimeException("No alias is available for field '$fieldName'.");
+        if ($this->fieldsMap->isFieldMapped($fieldName, $locale)) {
+            return $this->fieldsMap->getAliasFromFieldName($fieldName, $locale);
         }
 
-        return $this->fieldsMap->getAliasFromFieldName($fieldName, $locale);
+        if ($locale !== $this->defaultLocale && $fallback) {
+            return $this->getFieldAlias($fieldName, $this->defaultLocale);
+        }
+
+        throw new \RuntimeException("No alias is available for field '$fieldName'.");
     }
 
     public function getStoryField(Story $story, $field, $locale = null)
     {
+        // @todo Clean up code
         if ($locale == null) {
             $locale = $this->defaultLocale;
         }
 
-        if (!$this->fieldsMap->hasAlias($field, $locale)) {
+        if (! $this->fieldsMap->hasAlias($field, $locale)) {
             if ($locale !== $this->defaultLocale) {
                 return $this->getStoryField($story, $field, $this->defaultLocale);
             }
@@ -105,6 +106,7 @@ class MetadataHelper
 
     public function getRecordFields(Record $record, array $fields = null, $locale = null)
     {
+        // @todo Clean up code
         if ($locale == null) {
             $locale = $this->defaultLocale;
         }
