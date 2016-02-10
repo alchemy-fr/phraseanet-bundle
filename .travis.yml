@@ -10,7 +10,7 @@ matrix:
 before_install:
   - phpenv config-rm xdebug.ini
   - composer self-update --no-progress --no-interaction
-  - phpenv config-add xdebug.ini
+  - echo "extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - make deps
 script:
