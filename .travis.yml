@@ -10,10 +10,10 @@ matrix:
 before_install:
   - phpenv config-rm xdebug.ini
   - composer self-update --no-progress --no-interaction
-  - echo "extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - make deps
 script:
+  - echo "zend_extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - make test
   - if [ $(phpenv version-name) = '5.6' ]; then make scrutinizer; fi
 notifications:
