@@ -6,10 +6,8 @@ use Alchemy\Phraseanet\Helper\MetadataHelper;
 use Alchemy\Phraseanet\Mapping\FieldMap;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhraseanetSDK\Entity\Metadata;
-use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\RecordCaption;
 use PhraseanetSDK\Entity\Story;
-use PhraseanetSDK\EntityManager;
 
 class MetadataHelperTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,8 +34,8 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
         $collection = new ArrayCollection();
 
         foreach ($captions as $name => $values) {
-            if (! is_array($values)) {
-                $values = [ $values ];
+            if (!is_array($values)) {
+                $values = [$values];
             }
 
             foreach ($values as $value) {
@@ -63,18 +61,18 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testGetStoryFieldReturnsCorrectValue()
     {
-        $map = new FieldMap([ 'ham' => [ 'en' => 'bacon' ] ]);
+        $map = new FieldMap(['ham' => ['en' => 'bacon']]);
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $story = $this->prophesize('PhraseanetSDK\Entity\Story');
-        $story->getCaption()->willReturn($this->buildCaptions([ 'bacon' => 'yummy' ]));
+        $story->getCaption()->willReturn($this->buildCaptions(['bacon' => 'yummy']));
 
         $this->assertEquals('yummy', $helper->getStoryField($story->reveal(), 'ham', 'en'));
     }
 
     public function testGetUndefinedStoryFieldReturnsEmptyString()
     {
-        $map = new FieldMap([ 'ham' => [ 'en' => 'bacon' ] ]);
+        $map = new FieldMap(['ham' => ['en' => 'bacon']]);
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $story = $this->prophesize('PhraseanetSDK\Entity\Story');
@@ -85,7 +83,7 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUnmappedStoryFieldReturnsEmptyString()
     {
-        $map = new FieldMap([ 'ham' => [ 'en' => 'bacon' ] ]);
+        $map = new FieldMap(['ham' => ['en' => 'bacon']]);
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $story = new Story($this->getEntityManager(), new \stdClass());
@@ -96,8 +94,8 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetRecordFieldsReturnsMappedValues()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
@@ -119,8 +117,8 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetRecordFieldsSubsetReturnsMappedValues()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
@@ -134,42 +132,42 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals([
             'ham' => 'pig'
-        ], $helper->getRecordFields($record->reveal(), [ 'ham' ], 'en'));
+        ], $helper->getRecordFields($record->reveal(), ['ham'], 'en'));
     }
 
     public function testGetRecordFieldsMapsMultiValuedFields()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $record = $this->prophesize('PhraseanetSDK\Entity\Record');
         $record->getMetadata()->willReturn($this->buildMetadata([
-            'bacon' => [ 'pig', 'pork' ],
+            'bacon' => ['pig', 'pork'],
             'yolk' => 'chicken',
             'steak' => 'cow'
         ]));
 
         $this->assertEquals([
-            'ham' => [ 'pig', 'pork' ]
-        ], $helper->getRecordFields($record->reveal(), [ 'ham' ], 'en'));
+            'ham' => ['pig', 'pork']
+        ], $helper->getRecordFields($record->reveal(), ['ham'], 'en'));
     }
 
     public function testGetRecordFieldReturnsMappedValue()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $record = $this->prophesize('PhraseanetSDK\Entity\Record');
         $record->getMetadata()->willReturn($this->buildMetadata([
-            'bacon' => [ 'pig', 'pork' ],
+            'bacon' => ['pig', 'pork'],
             'yolk' => 'chicken',
             'steak' => 'cow'
         ]));
@@ -180,15 +178,15 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetUnmappedRecordFieldReturnsEmptyValue()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $record = $this->prophesize('PhraseanetSDK\Entity\Record');
         $record->getMetadata()->willReturn($this->buildMetadata([
-            'bacon' => [ 'pig', 'pork' ],
+            'bacon' => ['pig', 'pork'],
         ]));
 
         $this->assertEquals('', $helper->getRecordField($record->reveal(), 'steak', 'en'));
@@ -198,34 +196,34 @@ class MetadataHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetRecordMultiFieldReturnsMappedValuesArray()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $record = $this->prophesize('PhraseanetSDK\Entity\Record');
         $record->getMetadata()->willReturn($this->buildMetadata([
-            'bacon' => [ 'pig', 'pork' ],
+            'bacon' => ['pig', 'pork'],
         ]));
 
-        $this->assertEquals([ 'pig', 'pork' ], $helper->getRecordMultiField($record->reveal(), 'ham', 'en'));
+        $this->assertEquals(['pig', 'pork'], $helper->getRecordMultiField($record->reveal(), 'ham', 'en'));
     }
 
     public function testGetUnmappedRecordMultiFieldReturnsEmptyArray()
     {
         $map = new FieldMap([
-            'ham' => [ 'en' => 'bacon' ],
-            'eggs' => [ 'en' => 'yolk' ]
+            'ham' => ['en' => 'bacon'],
+            'eggs' => ['en' => 'yolk']
         ]);
 
         $helper = new MetadataHelper($map, 'en', 'en');
 
         $record = $this->prophesize('PhraseanetSDK\Entity\Record');
         $record->getMetadata()->willReturn($this->buildMetadata([
-            'steak' => [ 'cow', 'ox' ],
+            'steak' => ['cow', 'ox'],
         ]));
 
-        $this->assertEquals([ ], $helper->getRecordMultiField($record->reveal(), 'steak', 'en'));
+        $this->assertEquals([], $helper->getRecordMultiField($record->reveal(), 'steak', 'en'));
     }
 }

@@ -44,8 +44,7 @@ class MetadataHelper
 
         try {
             return $this->fieldsMap->getFieldName($alias, $locale);
-        }
-        catch (\OutOfBoundsException $exception) {
+        } catch (\OutOfBoundsException $exception) {
             if ($locale !== $this->defaultLocale) {
                 return $this->getFieldName($alias, $this->defaultLocale);
             }
@@ -61,10 +60,10 @@ class MetadataHelper
     public function getFieldAlias($fieldName, $locale = null, $fallback = true)
     {
         if ($locale == null) {
-            $locale =  $this->defaultLocale;
+            $locale = $this->defaultLocale;
         }
 
-        if (! $this->fieldsMap->isFieldMapped($fieldName, $locale)) {
+        if (!$this->fieldsMap->isFieldMapped($fieldName, $locale)) {
             if ($locale !== $this->defaultLocale && $fallback) {
                 return $this->getFieldAlias($fieldName, $this->defaultLocale);
             }
@@ -81,7 +80,7 @@ class MetadataHelper
             $locale = $this->defaultLocale;
         }
 
-        if (! $this->fieldsMap->hasAlias($field, $locale)) {
+        if (!$this->fieldsMap->hasAlias($field, $locale)) {
             if ($locale !== $this->defaultLocale) {
                 return $this->getStoryField($story, $field, $this->defaultLocale);
             }
@@ -113,13 +112,13 @@ class MetadataHelper
         $map = [];
 
         foreach ($record->getMetadata() as $metadata) {
-            if (! $this->fieldsMap->isFieldMapped($metadata->getName(), $locale)) {
+            if (!$this->fieldsMap->isFieldMapped($metadata->getName(), $locale)) {
                 continue;
             }
 
             $alias = $this->fieldsMap->getAliasFromFieldName($metadata->getName(), $locale);
 
-            if ($fields !== null && ! in_array($alias, $fields)) {
+            if ($fields !== null && !in_array($alias, $fields)) {
                 continue;
             }
 
@@ -138,8 +137,8 @@ class MetadataHelper
     private function appendValueToMap($map, $alias, $value)
     {
         if (isset($map[$alias])) {
-            if (! is_array($map[$alias])) {
-                $map[$alias] = [ $map[$alias] ];
+            if (!is_array($map[$alias])) {
+                $map[$alias] = [$map[$alias]];
             }
 
             $map[$alias][] = $value;
@@ -156,7 +155,7 @@ class MetadataHelper
             $locale = $this->defaultLocale;
         }
 
-        if (! $this->fieldsMap->hasAlias($field, $locale)) {
+        if (!$this->fieldsMap->hasAlias($field, $locale)) {
             return null;
         }
 
@@ -174,7 +173,7 @@ class MetadataHelper
 
     public function getRecordMultiField(Record $record, $field, $locale = null)
     {
-        if (! $this->fieldsMap->hasAlias($field, $locale)) {
+        if (!$this->fieldsMap->hasAlias($field, $locale)) {
             return [];
         }
 
