@@ -109,16 +109,6 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(array('sort' => $queryValue, 'ord' => 'asc'), $builder->getQuery()->getRawQuery());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testInvalidSortParameterThrowsException()
-    {
-        $builder = new RecordQueryBuilder();
-
-        $builder->sortBy('test', true);
-    }
-
     public function getRecordTypeParameterMappings()
     {
         return array(

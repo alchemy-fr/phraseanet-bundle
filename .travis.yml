@@ -8,7 +8,9 @@ php:
 matrix:
   fast_finish: true
 before_install:
+  - phpenv config-rm xdebug.ini
   - composer self-update --no-progress --no-interaction
+  - phpenv config-add xdebug.ini
 install:
   - make deps
 script:
