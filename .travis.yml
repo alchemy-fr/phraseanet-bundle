@@ -10,17 +10,17 @@ git:
 matrix:
   fast_finish: true
 before_install:
-  - if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') -ne 'hhvm' ]; then phpenv config-rm xdebug.ini; fi
+  - if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') != 'hhvm' ]; then phpenv config-rm xdebug.ini; fi
   - composer self-update --no-progress --no-interaction
 install:
   - make deps
 script:
   - >
-      if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') -ne 'hhvm' ]; then
+      if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') != 'hhvm' ]; then
         echo "zend_extension = xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini;
       fi
   - make test
   - >
-      if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') -ne 'hhvm' ];
+      if [ $(phpenv version-name | tr '[:upper:]' '[:lower:]') != 'hhvm' ];
         then make scrutinizer;
       fi
