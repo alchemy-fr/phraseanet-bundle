@@ -71,7 +71,7 @@ class MetadataHelper
             return $this->getFieldAlias($fieldName, $this->defaultLocale);
         }
 
-        throw new \RuntimeException("No alias is available for field '$fieldName'.");
+        throw new \RuntimeException("No alias is available for field '$fieldName' with locale '$locale'.");
     }
 
     public function getStoryField(Story $story, $field, $locale = null)

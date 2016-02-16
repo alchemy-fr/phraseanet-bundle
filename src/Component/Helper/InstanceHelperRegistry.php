@@ -22,6 +22,10 @@ class InstanceHelperRegistry
         return isset($this->instanceHelpers[$name]);
     }
 
+    /**
+     * @param $name
+     * @return InstanceHelper
+     */
     public function getHelper($name)
     {
         if ($name == null) {
