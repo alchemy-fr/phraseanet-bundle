@@ -3,6 +3,6 @@ services:
   phraseanet.twig_extension:
     class: Alchemy\PhraseanetBundle\Twig\PhraseanetExtension
     arguments:
-      - @phraseanet.helper_registry
+      - "@phraseanet.helper_registry"
     tags:
       - { name: twig.extension }
