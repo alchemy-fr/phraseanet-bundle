@@ -6,8 +6,8 @@ services:
       -
         - addPath
         -
-          - %kernel.root_dir%/../vendor/phraseanet/php-sdk/src/PhraseanetSDK/Profiler/resources/views
-          - PhraseanetSDK
+          - "%kernel.root_dir%/../vendor/phraseanet/php-sdk/src/PhraseanetSDK/Profiler/resources/views"
+          - "PhraseanetSDK"
     tags:
       - { name: twig.loader }
 
@@ -19,16 +19,16 @@ services:
   phraseanet.plugins.timeline:
     class: Alchemy\PhraseanetBundle\Debug\TimelinePlugin
     arguments:
-      - @debug.stopwatch
+      - "@debug.stopwatch"
     tags:
       - { name: phraseanet.plugin }
 
   phraseanet.dataCollector:
     class: PhraseanetSDK\Profiler\PhraseanetSDKDataCollector
     arguments:
-      - @phraseanet.plugins.history
+      - "@phraseanet.plugins.history"
       - false
     tags:
       - name: data_collector
-        template: @PhraseanetSDK/Collector/phraseanet-sdk.html.twig
+        template: "@PhraseanetSDK/Collector/phraseanet-sdk.html.twig"
         id: phrasea-sdk
