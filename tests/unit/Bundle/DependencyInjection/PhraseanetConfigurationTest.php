@@ -32,9 +32,12 @@ phraseanet:
                     fr: jambon
                     es: jamon
             subdefinitions:
-                low: preview
-                medium: preview_X2
-                large: preview_X4
+                low:
+                    default: preview
+                medium:
+                    default: preview_X2
+                large:
+                    default: preview_X4
             repositories:
                 api.default.stories: story
                 api.default.records: record

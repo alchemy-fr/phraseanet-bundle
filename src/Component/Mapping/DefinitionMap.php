@@ -19,16 +19,9 @@ class DefinitionMap
      */
     public function __construct(array $map = array())
     {
-        $this->map = $map;
-    }
-
-    /**
-     * @return array
-     * @deprecated Use DefinitionMap::toArray() instead
-     */
-    public function getMap()
-    {
-        return $this->toArray();
+        foreach ($map as $definition => $subdefinition) {
+            $this->addMapping($definition, $subdefinition);
+        }
     }
 
     /**
@@ -41,44 +34,46 @@ class DefinitionMap
 
     /**
      * @param string $definition
-     * @param string $subDefinition
+     * @param string|array $subDefinition
      */
     public function addMapping($definition, $subDefinition)
     {
+        if (!  is_array($subDefinition)) {
+            $subDefinition = [ 'default' => $subDefinition ];
+        }
+
         $this->map[$definition] = $subDefinition;
     }
 
     /**
      * @param string $definition
+     * @param string|null $type
      * @return bool
      */
-    public function hasSubDefinition($definition)
+    public function hasSubDefinition($definition, $type = null)
     {
-        return isset($this->map[$definition]);
-    }
+        if ($type !== null && isset($this->map[$definition][$type])) {
+            return true;
+        }
 
-    /**
-     * @param $definition
-     * @return string
-     * @throws \Exception
-     * @deprecated Use DefinitionMap::getSubDefinition() instead
-     */
-    public function getDefinitionSubdef($definition)
-    {
-        return $this->getSubDefinition($definition);
+        return isset($this->map[$definition]['default']);
     }
 
     /**
      * @param string $definition
+     * @param string|null $type
      * @return string
-     * @throws \Exception
      */
-    public function getSubDefinition($definition)
+    public function getSubDefinition($definition, $type = null)
     {
-        if (!isset($this->map[$definition])) {
+        if (! $this->hasSubDefinition($definition, $type)) {
             throw new \OutOfBoundsException(sprintf('No subdef configured for definition "%s".', $definition));
         }
 
-        return $this->map[$definition];
+        if ($type !== null && isset($this->map[$definition][$type])) {
+            return $this->map[$definition][$type];
+        }
+
+        return $this->map[$definition]['default'];
     }
 }
