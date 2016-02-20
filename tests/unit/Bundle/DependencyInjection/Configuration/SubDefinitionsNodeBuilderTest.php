@@ -13,9 +13,12 @@ class SubDefinitionsNodeBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $rawData = <<<EOY
 subdefinitions:
-    low: small_preview
-    medium: preview
-    high: large_preview
+    low:
+        default: small_preview
+    medium:
+        default: preview
+    high:
+        default: large_preview
 EOY;
 
         $loader = new Yaml();
@@ -26,10 +29,10 @@ EOY;
 
         $mergedConfiguration = $processor->processConfiguration($configuration, $data);
 
-        $this->assertEquals(array(
-            'low' => 'small_preview',
-            'medium' => 'preview',
-            'high' => 'large_preview'
-        ), $mergedConfiguration);
+        $this->assertEquals([
+            'low' => [ 'default' => 'small_preview' ],
+            'medium' => [ 'default' => 'preview' ],
+            'high' => [ 'default' => 'large_preview' ]
+        ], $mergedConfiguration);
     }
 }

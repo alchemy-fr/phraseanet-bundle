@@ -36,6 +36,7 @@ class SubDefinitionsNodeBuilder implements ConfigurationInterface
 
         $node
             ->useAttributeAsKey('name')
+            ->prototype('array')
             ->prototype('scalar')
             ->isRequired()
             ->cannotBeEmpty();
