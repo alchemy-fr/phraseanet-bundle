@@ -112,7 +112,7 @@ class MetadataHelper
 
         $map = [];
 
-        foreach ($story->getMetadata() as $metadata) {
+        foreach ($story->getCaption() as $metadata) {
             if (!$this->fieldsMap->isFieldMapped($metadata->getName(), $locale)) {
                 continue;
             }
