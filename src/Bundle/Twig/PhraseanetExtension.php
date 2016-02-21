@@ -42,6 +42,13 @@ class PhraseanetExtension extends \Twig_Extension
         return base64_encode(sprintf('%s_%s_%s', $instanceName, $record->getDataboxId(), $record->getRecordId()));
     }
 
+    /**
+     * @param Record $record
+     * @param $field
+     * @param null $locale
+     * @param null $instanceName
+     * @return null|string
+     */
     public function getRecordCaption(Record $record, $field, $locale = null, $instanceName = null)
     {
         $metadataHelper = $this->helpers->getHelper($instanceName)->getMetadataHelper();
@@ -49,6 +56,13 @@ class PhraseanetExtension extends \Twig_Extension
         return $metadataHelper->getRecordField($record, $field, $locale);
     }
 
+    /**
+     * @param Story $story
+     * @param $field
+     * @param null $locale
+     * @param null $instanceName
+     * @return string
+     */
     public function getStoryCaption(Story $story, $field, $locale = null, $instanceName = null)
     {
         $metadataHelper = $this->helpers->getHelper($instanceName)->getMetadataHelper();
@@ -56,6 +70,13 @@ class PhraseanetExtension extends \Twig_Extension
         return $metadataHelper->getStoryField($story, $field, $locale);
     }
 
+    /**
+     * @param Record $record
+     * @param $field
+     * @param null $locale
+     * @param null $instanceName
+     * @return array
+     */
     public function getRecordMultiCaption(Record $record, $field, $locale = null, $instanceName = null)
     {
         $metadataHelper = $this->helpers->getHelper($instanceName)->getMetadataHelper();

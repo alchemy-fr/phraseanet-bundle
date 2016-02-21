@@ -104,6 +104,31 @@ class MetadataHelper
         return '';
     }
 
+    public function getStoryFields(Story $story, array $fields = null, $locale = null)
+    {
+        if ($locale == null) {
+            $locale = $this->defaultLocale;
+        }
+
+        $map = [];
+
+        foreach ($story->getMetadata() as $metadata) {
+            if (!$this->fieldsMap->isFieldMapped($metadata->getName(), $locale)) {
+                continue;
+            }
+
+            $alias = $this->fieldsMap->getAliasFromFieldName($metadata->getName(), $locale);
+
+            if ($fields !== null && !in_array($alias, $fields)) {
+                continue;
+            }
+
+            $map = $this->appendValueToMap($map, $alias, $metadata->getValue());
+        }
+
+        return $map;
+    }
+
     public function getRecordFields(Record $record, array $fields = null, $locale = null)
     {
         // @todo Clean up code
