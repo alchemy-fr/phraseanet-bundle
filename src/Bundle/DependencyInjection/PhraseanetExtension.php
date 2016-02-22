@@ -96,7 +96,9 @@ class PhraseanetExtension extends ConfigurableExtension
             $configuration['connection']['secret'],
         ]);
 
-        $application->addMethodCall('setExtendedMode', [true]);
+        if (isset($configuration['extended']) && $configuration['extended']) {
+            $application->addMethodCall('setExtendedMode', [true]);
+        }
 
         $tokenProvider = new Definition(ChainedTokenProvider::class);
 
