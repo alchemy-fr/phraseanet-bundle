@@ -33,6 +33,10 @@ class RepositoriesNodeBuilder implements ConfigurationInterface
             ->cannotBeEmpty()
             ->validate()
             ->ifTrue(function ($value) {
+                if ($value == 'search') {
+                    return false;
+                }
+
                 return ! class_exists("PhraseanetSDK\\Repository\\" . ucfirst($value));
             })
             ->thenInvalid('Repository type does not exist.');

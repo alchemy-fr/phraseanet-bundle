@@ -3,7 +3,8 @@
 namespace Alchemy\Phraseanet;
 
 use PhraseanetSDK\Application;
-use PhraseanetSDK\Repository\AbstractRepository;
+use PhraseanetSDK\AbstractRepository;
+use PhraseanetSDK\Search\SearchRepository;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -76,7 +77,7 @@ class EntityManagerFactory
 
     /**
      * @param $name
-     * @return AbstractRepository
+     * @return \PhraseanetSDK\AbstractRepository
      */
     public function getRepository($name)
     {
@@ -96,7 +97,13 @@ class EntityManagerFactory
             return true;
         };
 
-        return $factory->createProxy('PhraseanetSDK\Repository\\' . ucfirst($name), $initializer);
+        $class = 'PhraseanetSDK\Repository\\' . ucfirst($name);
+
+        if ($name == 'search') {
+            $class = SearchRepository::class;
+        }
+
+        return $factory->createProxy($class, $initializer);
     }
 
     /**

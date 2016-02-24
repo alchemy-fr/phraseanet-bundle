@@ -198,6 +198,14 @@ class RecordQueryBuilder
     }
 
     /**
+     * @param int $pageIndex The 0-based page index
+     */
+    public function setPage($pageIndex)
+    {
+        $this->setOffset(($pageIndex) * ($this->recordsPerPage - 1));
+    }
+
+    /**
      * Sets the sort type for the query
      *
      * @param string $sort One of the SORT_* constant values.
