@@ -45,15 +45,15 @@ class PhraseanetExtension extends \Twig_Extension
     /**
      * @param Record $record
      * @param $field
-     * @param null $locale
-     * @param null $instanceName
-     * @return null|string
+     * @param string|null $locale
+     * @param string|null $instanceName
+     * @return string
      */
     public function getRecordCaption(Record $record, $field, $locale = null, $instanceName = null)
     {
         $metadataHelper = $this->helpers->getHelper($instanceName)->getMetadataHelper();
 
-        return $metadataHelper->getRecordField($record, $field, $locale);
+        return (string) $metadataHelper->getRecordField($record, $field, $locale);
     }
 
     /**

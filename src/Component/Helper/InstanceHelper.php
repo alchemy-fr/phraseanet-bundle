@@ -48,6 +48,10 @@ class InstanceHelper
         return $this->definitionMap;
     }
 
+    /**
+     * @return FeedHelper
+     * @deprecated Use FeedEntryFilter instead
+     */
     public function getFeedHelper()
     {
         return $this->feedHelper;
