@@ -1,8 +1,11 @@
 # phraseanet-bundle
 
-[![Build Status](https://travis-ci.org/alchemy-fr/phraseanet-bundle.svg?branch=master)](https://travis-ci.org/alchemy-fr/phraseanet-bundle)
-[![Code Coverage](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/?branch=master)
+[![License](https://img.shields.io/packagist/l/alchemy/phraseanet-bundle.svg?style=flat-square)](https://github.com/alchemy-fr/phraseanet-bundle/LICENSE)
+[![Packagist](https://img.shields.io/packagist/v/alchemy/phraseanet-bundle.svg?style=flat-square)](https://packagist.org/packages/alchemy/phraseanet-bundle)
+[![Travis](https://img.shields.io/travis/alchemy-fr/phraseanet-bundle.svg?style=flat-square)](https://travis-ci.org/alchemy-fr/phraseanet-bundle)
+[![Scrutinizer Coverage](https://img.shields.io/scrutinizer/coverage/g/alchemy-fr/phraseanet-bundle.svg?style=flat-square)](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/?branch=master)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/alchemy-fr/phraseanet-bundle.svg?style=flat-square)](https://scrutinizer-ci.com/g/alchemy-fr/phraseanet-bundle/)
+[![Packagist](https://img.shields.io/packagist/dt/alchemy/phraseanet-bundle.svg?style=flat-square)](https://packagist.org/packages/alchemy/phraseanet-bundle/stats)
 
 ## Description
 
