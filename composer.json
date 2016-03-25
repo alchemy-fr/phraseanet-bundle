@@ -11,7 +11,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "phraseanet/php-sdk": "~0.8.0",
+    "phraseanet/php-sdk": "^0.9",
     "ocramius/proxy-manager": "^1.0"
   },
   "require-dev": {
