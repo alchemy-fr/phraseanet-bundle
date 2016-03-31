@@ -77,6 +77,16 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(array('offset_start' => 42), $builder->getQuery()->getRawQuery());
     }
 
+    public function setPageCreatesQueryWithOffsetParameter()
+    {
+        $builder = new RecordQueryBuilder();
+
+        $builder->setLimit(20);
+        $builder->setPage(2);
+
+        $this->assertArraySubset(array('offset_start' => 40), $builder->getQuery()->getRawQuery());
+    }
+
     public function testSetLimitCreateQueryWithLimitParameter()
     {
         $builder = new RecordQueryBuilder();

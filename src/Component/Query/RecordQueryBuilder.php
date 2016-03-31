@@ -202,7 +202,7 @@ class RecordQueryBuilder
      */
     public function setPage($pageIndex)
     {
-        $this->setOffset(($pageIndex) * ($this->recordsPerPage - 1));
+        $this->setOffset($pageIndex * $this->recordsPerPage);
     }
 
     /**
