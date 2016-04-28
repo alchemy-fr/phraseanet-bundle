@@ -2,7 +2,9 @@
 
 namespace Alchemy\Phraseanet\Helper;
 
+use Alchemy\Phraseanet\ChainedTokenProvider;
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
+use Alchemy\Phraseanet\TokenProvider;
 
 /**
  * Class InstanceHelper acts as a helper registry for a given instance.
@@ -31,6 +33,17 @@ class InstanceHelper
      */
     private $thumbHelper;
 
+    /**
+     * @var TokenProvider
+     */
+    private $tokenProvider;
+
+    /**
+     * @param DefinitionMap $definitionMap
+     * @param FeedHelper $feedHelper
+     * @param MetadataHelper $metadataHelper
+     * @param ThumbHelper $thumbHelper
+     */
     public function __construct(
         DefinitionMap $definitionMap,
         FeedHelper $feedHelper,
@@ -41,6 +54,18 @@ class InstanceHelper
         $this->feedHelper = $feedHelper;
         $this->metadataHelper = $metadataHelper;
         $this->thumbHelper = $thumbHelper;
+
+        $this->tokenProvider = new ChainedTokenProvider();
+    }
+
+    public function setTokenProvider(TokenProvider $tokenProvider)
+    {
+        $this->tokenProvider = $tokenProvider;
+    }
+
+    public function getTokenProvider()
+    {
+        return $this->tokenProvider;
     }
 
     public function getDefinitionMap()
