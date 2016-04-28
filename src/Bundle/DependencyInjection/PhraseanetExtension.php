@@ -186,6 +186,10 @@ class PhraseanetExtension extends ConfigurableExtension
             new Reference($baseKey . '.thumbs')
         ]));
 
+        $container
+            ->getDefinition($baseKey)
+            ->addMethodCall('setTokenProvider', [ new Reference('phraseanet.token_provider') ]);
+
         $registry->addMethodCall('addHelper', [
             $instanceName,
             new Reference($baseKey)
