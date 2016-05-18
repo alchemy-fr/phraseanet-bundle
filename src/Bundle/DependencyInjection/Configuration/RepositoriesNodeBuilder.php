@@ -33,7 +33,7 @@ class RepositoriesNodeBuilder implements ConfigurationInterface
             ->cannotBeEmpty()
             ->validate()
             ->ifTrue(function ($value) {
-                if ($value == 'search') {
+                if ($value == 'search' || $value == 'orders') {
                     return false;
                 }
 

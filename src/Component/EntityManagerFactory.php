@@ -4,6 +4,7 @@ namespace Alchemy\Phraseanet;
 
 use PhraseanetSDK\Application;
 use PhraseanetSDK\AbstractRepository;
+use PhraseanetSDK\Orders\OrderRepository;
 use PhraseanetSDK\Search\SearchRepository;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
@@ -101,6 +102,10 @@ class EntityManagerFactory
 
         if ($name == 'search') {
             $class = SearchRepository::class;
+        }
+
+        if ($name == 'orders') {
+            $class = OrderRepository::class;
         }
 
         return $factory->createProxy($class, $initializer);
