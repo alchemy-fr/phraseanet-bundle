@@ -26,6 +26,7 @@ class PhraseanetExtension extends \Twig_Extension
             new \Twig_SimpleFunction('record_caption', [$this, 'getRecordCaption']),
             new \Twig_SimpleFunction('story_caption', [$this, 'getStoryCaption']),
             new \Twig_SimpleFunction('fetch_thumbnail', [$this, 'fetchThumbnail']),
+            new \Twig_SimpleFunction('fetch_thumbnail_url', [$this, 'fetchThumbnailUrl']),
             new \Twig_SimpleFunction('feed_entry_has_pdf_documents', [$this, 'entryContainsPdfDocuments'])
         );
     }
@@ -35,6 +36,17 @@ class PhraseanetExtension extends \Twig_Extension
         $thumbFetcher = $this->helpers->getHelper($instanceName)->getThumbHelper();
 
         return $thumbFetcher->fetch($record, $thumbType);
+    }
+
+    public function fetchThumbnailUrl($record, $thumbType = 'media', $instanceName = null)
+    {
+        $subdef = $this->fetchThumbnail($record, $thumbType, $instanceName);
+
+        if (! $subdef) {
+            return '';
+        }
+
+        return $subdef->getPermalink()->getUrl();
     }
 
     public function getRecordHash(Record $record, $instanceName = null)
