@@ -276,7 +276,8 @@ class RecordQueryBuilder
     {
         $allowedTypes = array(
             self::SEARCH_RECORDS,
-            self::SEARCH_STORIES
+            self::SEARCH_STORIES,
+            self::SEARCH_STORIES_LIGHT
         );
 
         if (! in_array($searchType, $allowedTypes, true)) {
