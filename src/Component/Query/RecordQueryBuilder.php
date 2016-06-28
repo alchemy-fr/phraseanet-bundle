@@ -21,6 +21,8 @@ class RecordQueryBuilder
     const SEARCH_RECORDS = 0;
 
     const SEARCH_STORIES = 1;
+    
+    const SEARCH_STORIES_LIGHT = 2;
 
     const SORT_RELEVANCE = 'relevance';
 
