@@ -14,6 +14,5 @@ class NullPredicate extends AbstractPredicate
      */
     public function acceptPredicateVisitor(PredicateVisitor $visitor)
     {
-
     }
 }
