@@ -4,5 +4,6 @@ services:
     class: Alchemy\PhraseanetBundle\Twig\PhraseanetExtension
     arguments:
       - "@phraseanet.helper_registry"
+      - "@parade_media.field_map_registry"
     tags:
       - { name: twig.extension }

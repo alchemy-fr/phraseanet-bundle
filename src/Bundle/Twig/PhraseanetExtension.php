@@ -6,6 +6,7 @@ use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
 use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
+use Parade\Component\Media\Meta\FieldMapRegistry;
 
 class PhraseanetExtension extends \Twig_Extension
 {
@@ -14,9 +15,15 @@ class PhraseanetExtension extends \Twig_Extension
      */
     private $helpers;
 
-    public function __construct(InstanceHelperRegistry $helpers)
+    /**
+     * @var FieldMapRegistry
+     */
+    private $fieldMapRegistry;
+
+    public function __construct(InstanceHelperRegistry $helpers, FieldMapRegistry $fieldMapRegistry)
     {
         $this->helpers = $helpers;
+        $this->fieldMapRegistry = $fieldMapRegistry;
     }
 
     public function getFunctions()
@@ -51,7 +58,12 @@ class PhraseanetExtension extends \Twig_Extension
 
     public function getRecordHash(Record $record, $instanceName = null)
     {
-        return base64_encode(sprintf('%s_%s_%s', $instanceName, $record->getDataboxId(), $record->getRecordId()));
+        return base64_encode(json_encode([
+            'i' => $instanceName,
+            'm' => $this->fieldMapRegistry->getDefaultMapName(),
+            'd' => $record->getDataboxId(),
+            'r' => $record->getRecordId()
+        ]));
     }
 
     /**
