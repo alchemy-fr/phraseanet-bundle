@@ -50,6 +50,8 @@ class PhraseanetExtension extends ConfigurableExtension
         $loader->load('profiler.yml');
 
         $registry = new Definition(EntityManagerRegistry::class);
+        $registry->setLazy(true);
+
         $helperRegistry = new Definition(InstanceHelperRegistry::class);
 
         foreach ($mergedConfig['instances'] as $name => $configuration) {
