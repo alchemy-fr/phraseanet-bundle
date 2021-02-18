@@ -100,6 +100,11 @@ class RecordQueryBuilder
      */
     private $sortType = null;
 
+	/**
+	 * @var bool Type of truncature
+	 */
+    private $truncature = true;
+
     /**
      * Sets the record search query string. Format follows the same specification as the Phraseanet search
      * engine.
@@ -359,6 +364,18 @@ class RecordQueryBuilder
         return $this;
     }
 
+	/**
+	 * Set truncature search type
+	 *
+	 * @param bool $truncature
+	 * @return $this
+	 */
+	public function setTruncature(bool $truncature)
+	{
+		$this->truncature = $truncature;
+		return $this;
+	}
+
     /**
      * Adds a field to the list of requested fields.
      *
@@ -433,6 +450,7 @@ class RecordQueryBuilder
         $query = $this->appendStatuses($query);
         $query = $this->appendFields($query);
         $query = $this->appendSort($query);
+        $query = $this->appendTruncature($query);
 
         return new RecordQuery($query, $this->searchType);
     }
@@ -505,6 +523,18 @@ class RecordQueryBuilder
 
         return $query;
     }
+
+
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
+    private function appendTruncature($query)
+	{
+		$query['truncation'] = $this->truncature;
+
+		return $query;
+	}
 
     /**
      * @param $query
