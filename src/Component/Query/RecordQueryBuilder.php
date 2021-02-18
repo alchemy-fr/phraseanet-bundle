@@ -101,7 +101,7 @@ class RecordQueryBuilder
     private $sortType = null;
 
 	/**
-	 * @var bool Type of trucature
+	 * @var bool Type of truncature
 	 */
     private $truncature = true;
 
