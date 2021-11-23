@@ -102,6 +102,10 @@ class PhraseanetExtension extends ConfigurableExtension
             $application->addMethodCall('setExtendedMode', [true]);
         }
 
+        if (isset($configuration['disable_ssl_verification'])) {
+            $application->addMethodCall('setSslVerification', [!$configuration['disable_ssl_verification']]);
+        }
+
         $tokenProvider = new Definition(ChainedTokenProvider::class);
 
         $applicationTokenProvider = new Definition(ApplicationTokenProvider::class, [

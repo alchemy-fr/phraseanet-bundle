@@ -47,6 +47,7 @@ class PhraseanetConfiguration implements ConfigurationInterface
                             ->end()
                         ->end()
                         ->booleanNode('extended')->defaultTrue()->end()
+                        ->booleanNode('disable_ssl_verification')->defaultFalse()->end()
                         ->scalarNode('uploader')->end()
                         ->append((new CacheNodeBuilder())->getNode())
                         ->append((new MappingNodeBuilder('mappings'))->getNode())
