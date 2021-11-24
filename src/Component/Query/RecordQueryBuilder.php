@@ -106,6 +106,11 @@ class RecordQueryBuilder
     private $truncature = true;
 
     /**
+     * @var bool Whether to activate truncation search mode
+     */
+    private $enableTruncation = false;
+
+    /**
      * Sets the record search query string. Format follows the same specification as the Phraseanet search
      * engine.
      *
@@ -431,6 +436,30 @@ class RecordQueryBuilder
     }
 
     /**
+     * Enables truncation search mode.
+     */
+    public function enableTruncation()
+    {
+        $this->enableTruncation = true;
+    }
+
+    /**
+     * Disables truncation search mode
+     */
+    public function disableTruncation()
+    {
+        $this->enableTruncation = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTruncationEnabled()
+    {
+        return $this->enableTruncation;
+    }
+
+    /**
      * Returns the built query.
      *
      * @return RecordQuery
@@ -442,7 +471,8 @@ class RecordQueryBuilder
             'bases' => array_unique($this->collections),
             'offset_start' => $this->offsetStart,
             'per_page' => $this->recordsPerPage,
-            'search_type' => $this->searchType
+            'search_type' => $this->searchType,
+            'truncation' => $this->enableTruncation ? 1 : 0
         );
 
         $query = $this->appendRecordType($query);

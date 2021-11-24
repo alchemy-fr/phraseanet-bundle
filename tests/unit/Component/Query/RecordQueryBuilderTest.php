@@ -378,4 +378,30 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setFields(array('bacon', 'eggs', $name));
     }
+
+    public function testTruncationIsDisabledByDefault()
+    {
+        $builder = new RecordQueryBuilder();
+
+        $this->assertFalse($builder->isTruncationEnabled(), 'Truncation should be disabled by default');
+    }
+
+    public function testTruncationCanBeEnabled()
+    {
+        $builder = new RecordQueryBuilder();
+
+        $builder->enableTruncation();
+
+        $this->assertTrue($builder->isTruncationEnabled(), 'Truncation should be enabled after calling enable');
+    }
+
+    public function testTruncationCanBeDisabled()
+    {
+        $builder = new RecordQueryBuilder();
+
+        $builder->enableTruncation();
+        $builder->disableTruncation();
+
+        $this->assertFalse($builder->isTruncationEnabled(), 'Truncation should be disabled after calling disable');
+    }
 }
