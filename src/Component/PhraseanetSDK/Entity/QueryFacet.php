@@ -1,0 +1,90 @@
+<?php
+
+namespace Alchemy\Phraseanet\PhraseanetSDK\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+
+class QueryFacet
+{
+    /**
+     * @param \stdClass[] $values
+     * @return QueryFacet[]
+     */
+    public static function fromList(array $values)
+    {
+        $facets = array();
+
+        foreach ($values as $value) {
+            $facets[] = self::fromValue($value);
+        }
+
+        return $facets;
+    }
+
+    /**
+     * @param \stdClass $value
+     * @return QueryFacet
+     */
+    public static function fromValue(\stdClass $value)
+    {
+        return new self($value);
+    }
+
+    /**
+     * @var \stdClass
+     */
+    protected $source;
+
+    /**
+     * @var QueryFacetValue[]|ArrayCollection
+     */
+    protected $values;
+
+    /**
+     * @param \stdClass $source
+     */
+    public function __construct(\stdClass $source = null)
+    {
+        $this->source = $source ?: new \stdClass();
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getRawData()
+    {
+        return $this->source;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return isset($this->source->name) ? $this->source->name : '';
+    }
+
+    /**
+     * @return ArrayCollection|QueryFacetValue[]
+     */
+    public function getValues()
+    {
+        if (! isset($this->source->values)) {
+            $this->values = new ArrayCollection();
+        }
+
+        return $this->values ?: $this->values = new ArrayCollection(QueryFacetValue::fromList($this->source->values));
+    }
+
+    /**
+     * @param ArrayCollection|QueryFacetValue[] $values
+     */
+    public function setValues($values)
+    {
+        if (is_array($values)) {
+            $values = new ArrayCollection($values);
+        }
+
+        $this->values = $values;
+    }
+}

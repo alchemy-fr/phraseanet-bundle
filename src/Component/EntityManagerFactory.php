@@ -2,10 +2,17 @@
 
 namespace Alchemy\Phraseanet;
 
-use PhraseanetSDK\Application;
-use PhraseanetSDK\AbstractRepository;
-use PhraseanetSDK\Orders\OrderRepository;
-use PhraseanetSDK\Search\SearchRepository;
+// use PhraseanetSDK\Application;
+use Alchemy\Phraseanet\PhraseanetSDK\Application;
+
+//use PhraseanetSDK\AbstractRepository;
+use Alchemy\Phraseanet\PhraseanetSDK\AbstractRepository;
+
+use Alchemy\Phraseanet\PhraseanetSDK\Orders\OrderRepository;
+
+// use PhraseanetSDK\Search\SearchRepository;
+use Alchemy\Phraseanet\PhraseanetSDK\Search\SearchRepository;
+
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -62,10 +69,11 @@ class EntityManagerFactory
     }
 
     /**
-     * @return \PhraseanetSDK\EntityManager
+     * @return \Alchemy\Phraseanet\PhraseanetSDK\EntityManager
      */
     public function getEntityManager()
     {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s()\n",__FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $token = $this->tokenProvider->getToken();
         $options = $this->getOptions();
 
@@ -78,10 +86,11 @@ class EntityManagerFactory
 
     /**
      * @param $name
-     * @return \PhraseanetSDK\AbstractRepository
+     * @return \Alchemy\Phraseanet\PhraseanetSDK\AbstractRepository
      */
     public function getRepository($name)
     {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s)\n",__FILE__, __LINE__, __FUNCTION__, $name), FILE_APPEND);
         $configuration = $this->getProxyFactoryConfiguration();
 
         $factory = new LazyLoadingValueHolderFactory($configuration);
@@ -98,7 +107,7 @@ class EntityManagerFactory
             return true;
         };
 
-        $class = 'PhraseanetSDK\Repository\\' . ucfirst($name);
+        $class = 'Alchemy\Phraseanet\PhraseanetSDK\Repository\\' . ucfirst($name);
 
         if ($name == 'search') {
             $class = SearchRepository::class;

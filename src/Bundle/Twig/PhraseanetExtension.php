@@ -3,9 +3,9 @@
 namespace Alchemy\PhraseanetBundle\Twig;
 
 use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
-use PhraseanetSDK\Entity\FeedEntry;
-use PhraseanetSDK\Entity\Record;
-use PhraseanetSDK\Entity\Story;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\FeedEntry;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Record;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Story;
 use Parade\Component\Media\Meta\FieldMapRegistry;
 
 class PhraseanetExtension extends \Twig_Extension

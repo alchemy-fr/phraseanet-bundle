@@ -3,7 +3,7 @@
 namespace Alchemy\Phraseanet\Query;
 
 use Alchemy\Phraseanet\Predicate\PredicateBuilder;
-use PhraseanetSDK\Entity\DataboxCollection;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\DataboxCollection;
 
 class RecordQueryBuilder
 {

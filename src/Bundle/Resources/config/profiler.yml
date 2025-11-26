@@ -23,12 +23,12 @@ services:
     tags:
       - { name: phraseanet.plugin }
 
-  phraseanet.dataCollector:
-    class: PhraseanetSDK\Profiler\PhraseanetSDKDataCollector
-    arguments:
-      - "@phraseanet.plugins.history"
-      - false
-    tags:
-      - name: data_collector
-        template: "@PhraseanetSDK/Collector/phraseanet-sdk.html.twig"
-        id: phrasea-sdk
+#  phraseanet.dataCollector:
+#    class: Alchemy\Phraseanet\PhraseanetSDK\Profiler\PhraseanetSDKDataCollector
+#    arguments:
+#      - "@phraseanet.plugins.history"
+#      - false
+#    tags:
+#      - name: data_collector
+#        template: "@PhraseanetSDK/Collector/phraseanet-sdk.html.twig"
+#        id: phrasea-sdk

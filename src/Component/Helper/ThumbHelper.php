@@ -3,8 +3,8 @@
 namespace Alchemy\Phraseanet\Helper;
 
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
-use PhraseanetSDK\Entity\Record;
-use PhraseanetSDK\Entity\Story;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Record;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Story;
 
 class ThumbHelper
 {
@@ -29,7 +29,7 @@ class ThumbHelper
      *
      * @param Record|Story $record Record for which to fetch the thumbnail
      * @param string $type Size of the thumbnail
-     * @return null|\PhraseanetSDK\Entity\Subdef
+     * @return null|\Alchemy\Phraseanet\PhraseanetSDK\Entity\Subdef
      * @throws \InvalidArgumentException
      */
     public function fetch($record, $type)

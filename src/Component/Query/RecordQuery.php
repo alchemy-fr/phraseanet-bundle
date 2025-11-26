@@ -2,8 +2,8 @@
 
 namespace Alchemy\Phraseanet\Query;
 
-use PhraseanetSDK\Repository\Record;
-use PhraseanetSDK\Repository\Story;
+use Alchemy\Phraseanet\PhraseanetSDK\Repository\Record;
+use Alchemy\Phraseanet\PhraseanetSDK\Repository\Story;
 
 class RecordQuery
 {

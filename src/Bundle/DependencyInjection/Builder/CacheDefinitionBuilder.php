@@ -11,8 +11,8 @@ use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Guzzle\Plugin\Cache\RevalidationInterface;
-use PhraseanetSDK\Cache\CanCacheStrategy;
-use PhraseanetSDK\Cache\RevalidationFactory;
+use Alchemy\Phraseanet\PhraseanetSDK\Cache\CanCacheStrategy;
+use Alchemy\Phraseanet\PhraseanetSDK\Cache\RevalidationFactory;
 use Symfony\Component\DependencyInjection\Definition;
 
 class CacheDefinitionBuilder

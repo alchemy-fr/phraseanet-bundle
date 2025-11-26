@@ -37,7 +37,7 @@ class RepositoriesNodeBuilder implements ConfigurationInterface
                     return false;
                 }
 
-                return ! class_exists("PhraseanetSDK\\Repository\\" . ucfirst($value));
+                return ! class_exists("Alchemy\Phraseanet\PhraseanetSDK\\Repository\\" . ucfirst($value));
             })
             ->thenInvalid('Repository type does not exist.');
 

@@ -3,8 +3,8 @@
 namespace Alchemy\Phraseanet\Helper;
 
 use Alchemy\Phraseanet\Mapping\FieldMap;
-use PhraseanetSDK\Entity\Record;
-use PhraseanetSDK\Entity\Story;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Record;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\Story;
 
 class MetadataHelper
 {

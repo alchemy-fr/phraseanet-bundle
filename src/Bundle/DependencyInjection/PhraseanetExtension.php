@@ -14,8 +14,8 @@ use Alchemy\Phraseanet\EntityManagerFactory;
 use Alchemy\Phraseanet\EntityManagerRegistry;
 use Alchemy\Phraseanet\Mapping\FieldMap;
 use Alchemy\PhraseanetBundle\DependencyInjection\Builder\GuzzleAdapterBuilder;
-use PhraseanetSDK\Application;
-use PhraseanetSDK\EntityManager;
+use Alchemy\Phraseanet\PhraseanetSDK\Application;
+use Alchemy\Phraseanet\PhraseanetSDK\EntityManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -90,12 +90,15 @@ class PhraseanetExtension extends ConfigurableExtension
 
     protected function buildEntityManagerFactory(ContainerBuilder $container, array $configuration)
     {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $configuration['connection']['phrasea_secret']), FILE_APPEND);
         $adapterBuilder = new GuzzleAdapterBuilder();
-
+//var_dump($container);
+//die;
         $application = new Definition(Application::class, [
-            $adapterBuilder->buildDefinition($container, $configuration['connection']['url'], $configuration['cache']),
-            $configuration['connection']['client_id'],
-            $configuration['connection']['secret'],
+            $adapterBuilder->buildDefinition($container, $configuration['connection']['phrasea_url'], $configuration['cache']),
+            $configuration['connection']['phrasea_client-id'],
+            $configuration['connection']['phrasea_secret'],
         ]);
 
         if (isset($configuration['extended']) && $configuration['extended']) {
@@ -109,7 +112,10 @@ class PhraseanetExtension extends ConfigurableExtension
         $tokenProvider = new Definition(ChainedTokenProvider::class);
 
         $applicationTokenProvider = new Definition(ApplicationTokenProvider::class, [
-            $configuration['connection']['token']
+            $configuration['connection']['token'],
+            $configuration['connection']['phrasea_client-id'],
+            $configuration['connection']['phrasea_secret'],
+            $application
         ]);
 
         $tokenProvider->addMethodCall('setDefaultProvider', [ $applicationTokenProvider ]);
@@ -143,7 +149,7 @@ class PhraseanetExtension extends ConfigurableExtension
     {
         foreach ($mergedConfig['repositories'] as $name => $repositoryKey) {
             $definition = new Definition(
-                'PhraseanetSDK\Repository\AbstractRepository',
+                'Alchemy\Phraseanet\PhraseanetSDK\Repository\AbstractRepository',
                 array($repositoryKey)
             );
 

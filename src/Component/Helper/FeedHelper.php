@@ -2,8 +2,8 @@
 
 namespace Alchemy\Phraseanet\Helper;
 
-use PhraseanetSDK\Entity\FeedEntry;
-use PhraseanetSDK\Entity\FeedEntryItem;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\FeedEntry;
+use Alchemy\Phraseanet\PhraseanetSDK\Entity\FeedEntryItem;
 
 /**
  * Class FeedHelper

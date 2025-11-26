@@ -16,6 +16,7 @@ class GuzzleAdapterBuilder
      */
     public function buildDefinition(ContainerBuilder $container, $instanceUrl, array $cacheConfig = null)
     {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $instanceUrl), FILE_APPEND);
         $plugins = $this->getPluginReferences($container);
 
         if ($cacheConfig && $cacheConfig['type'] !== 'none') {
@@ -24,15 +25,16 @@ class GuzzleAdapterBuilder
 
         $adapterParameters = array(
             $instanceUrl,
-            $plugins
+            $_COOKIE['parade-standard-ml-lng'] ?? 'en',
+            $plugins,
         );
 
         $definition = new Definition(
-            'PhraseanetSDK\Http\GuzzleAdapter',
+            'Alchemy\Phraseanet\PhraseanetSDK\Http\GuzzleAdapter',
             $adapterParameters
         );
 
-        $definition->setFactory('PhraseanetSDK\Http\GuzzleAdapter::create');
+        $definition->setFactory('Alchemy\Phraseanet\PhraseanetSDK\Http\GuzzleAdapter::create');
 
         return $definition;
     }
