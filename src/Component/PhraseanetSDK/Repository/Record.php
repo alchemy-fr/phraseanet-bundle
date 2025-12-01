@@ -36,7 +36,6 @@ class Record extends AbstractRepository
 //
 //        return \Alchemy\Phraseanet\PhraseanetSDK\Entity\Record::fromValue($response->getProperty('record'));
 
-        $page = 1;
         $response = $this->query(
             'GET',
             '/assets/' . urlencode($recordId),
@@ -52,6 +51,30 @@ class Record extends AbstractRepository
         }
 
         $phraseaResult = $response->getResult();
+
+        $metadata = [];
+        $metadataByStruct_id = [];
+
+        foreach ($phraseaResult['attributes'] as $attribute) {
+            $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
+            $struct_id = $attribute['definition']['id'] . '_' . $locale;
+            $name = str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
+            $metadata[] = [
+                'meta_structure_id' => $struct_id,
+                'name'              => $name,
+                'labels'            => [],
+                'meta_id'           => $attribute['id'],
+                'value'             => $attribute['value'],
+            ];
+            if (!array_key_exists($struct_id, $metadataByStruct_id)) {
+                $metadataByStruct_id[$struct_id] = [
+                    'meta_structure_id' => $struct_id,
+                    'name'              => $name,
+                    'value'             => [],
+                ];
+            }
+            $metadataByStruct_id[$struct_id]['value'][] = $attribute['value'];
+        }
 
         $response = [
             'databox_id'             => $phraseaResult['workspace']['id'],
@@ -91,8 +114,16 @@ class Record extends AbstractRepository
                 'url'         => $phraseaResult['thumbnail']['file']['url'],
                 'url_ttl'     => '?',
             ],
-            'technical_informations' => [],
-            'phrasea_type'           => '?',
+            'technical_informations' => [
+                [ 'name' => 'Channels', 'value' => '?' ],
+                [ 'name' => 'ColorDepth', 'value' => '?' ],
+                [ 'name' => 'ColorSpace', 'value' => '?' ],
+                [ 'name' => 'FileSize', 'value' => $phraseaResult['thumbnail']['file']['size'] ],
+                [ 'name' => 'Height', 'value' => '?' ],
+                [ 'name' => 'MimeType', 'value' => '?' ],
+                [ 'name' => 'Width', 'value' => '?' ],
+            ],
+            'phrasea_type'           => 'image',
             'uuid'                   => '?',
             'subdefs'                => [
                 [
@@ -174,10 +205,18 @@ class Record extends AbstractRepository
                     'url_ttl'     => '?',
                 ],
             ],
-            'metadata'               => [],
+            'metadata'               => $metadata,
             'status'                 => [],
-            'caption'                => [],
+            'caption'                => array_map(function ($attribute) {
+                return [
+                    'meta_structure_id'   => $attribute['meta_structure_id'],
+                    'name' => $attribute['name'],
+                    'value'           => join(' ; ', $attribute['value']),
+                ];
+            }, $metadataByStruct_id),
         ];
+
+
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response, true)), FILE_APPEND);
 
         // turn array into object
@@ -223,13 +262,47 @@ class Record extends AbstractRepository
     {
         //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)), FILE_APPEND);
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($parameters, true)), FILE_APPEND);
+        if(0) {
+            $response = $this->query('POST', 'v'.$pAPINumber.'/searchraw/', array(), array_merge(
+                array('search_type' => 0),
+                $parameters
+            ));
 
-        $page = 1;
+            if ($response->isEmpty()) {
+                throw new RuntimeException('Response content is empty');
+            }
+
+            $results = $res = $response->getResult();
+            if ($pAPINumber == 3) {
+                $results = new \stdClass();
+                $results->results = new \stdClass();
+                foreach ($res->results as $key => $r) {
+                    $results->results->records[$key] = $r->_source;
+                }
+
+                if (!isset($results->results->records)) {
+                    $results->results->records = [];
+                }
+
+                $results->results->stories = [];
+                $results->facets = $res->facets;
+                $results->count = $res->count;
+                $results->total = $res->total;
+                $results->limit = isset($res->limit) ? $res->limit : 10;  // TODO: just $res->limit after a phraseanet PR in searchraw
+                $results->offset = isset($res->offset) ? $res->offset : 0;  // TODO: just $res->offset after a phraseanet PR
+                return Query::fromValue($this->em, $results);
+            }
+        }
+
+        $limit = isset($res->limit) ? $res->limit : 10;
+        $offset = isset($res->offset) ? $res->offset : 0;
+        $page = (int)($offset / $limit) + 1;        // todo phrasea : check this calculation is correct
         $response = $this->query(
             'GET',
             '/assets',
             [
                 'page'    => $page,
+                'limit'   => $limit,
                 'parents' => $parameters['bases'],
                 'query'   => $parameters['query']
             ],
@@ -239,28 +312,11 @@ class Record extends AbstractRepository
             ]
         );
 
-
         if ($response->isEmpty()) {
             throw new RuntimeException('Response content is empty');
         }
 
         $res = $response->getResult();
-//        $results = new \stdClass();
-//        $results->results = new \stdClass();
-//        foreach ($res->results as $key => $r) {
-//            $results->results->records[$key] = $r->_source;
-//        }
-//
-//        if (!isset($results->results->records)) {
-//            $results->results->records = [];
-//        }
-//        $results->results->stories = [];
-//        $results->facets = $res->facets;
-//        $results->count = $res->count;
-//        $results->total = $res->total;
-//        $results->limit = isset($res->limit) ? $res->limit : 10;  // TODO: just $res->limit after a phraseanet PR in searchraw
-//        $results->offset = isset($res->offset) ? $res->offset : 0;  // TODO: just $res->offset after a phraseanet PR
-
         $results = [
             'results' => [
                 'count'   => count($res['hydra:member']),
@@ -270,6 +326,32 @@ class Record extends AbstractRepository
                 'facets'  => [],
                 'stories' => [],
                 'records' => array_map(function ($asset) {
+                    $caption = [];
+                    $caption_all = [];
+                    foreach ($asset['attributes'] as $attribute) {
+                        $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
+                        $name =  str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
+                        if (!array_key_exists($name, $caption)) {
+                            $caption[$name] = [];
+                        }
+                        $caption[$name][] = $attribute['value'];
+                        $caption_all[] = $attribute['value'];
+                    }
+
+                    $subdefs = [];
+                    foreach(['main' => 'document', 'preview' => 'preview', 'thumbnail' => 'thumbnail'] as $assetFile => $subdefName) {
+                        if(!isset($asset[$assetFile])) {
+                            continue;
+                        }
+                        $subdefs[$subdefName] = [
+                            'width'     => '?',
+                            'height'    => '?',
+                            'size'      => $asset[$assetFile]['file']['size'],
+                            'mime'      => $asset[$assetFile]['file']['type'],
+                            'permalink' => $asset[$assetFile]['file']['url'],
+                        ];
+                    }
+
                     return [
                         'record_id'       => $asset['id'],
                         'collection_id'   => $asset['referenceCollection']['id'],
@@ -289,26 +371,11 @@ class Record extends AbstractRepository
                         'databox_name'    => $asset['workspace']['name'],
                         'record_type'     => 'record',
                         'title'           => $asset['title'],
-                        'caption'         => [],
-                        'caption_all'     => [],
+                        'caption'         => $caption,
+                        'caption_all'     => join("\n", $caption_all),
                         'metadata_tags'   => [],
                         'flags'           => [],
-                        'subdefs'         => [
-                            'document'  => [
-                                'width'     => '?',
-                                'height'    => '?',
-                                'size'      => $asset['source']['size'],
-                                'mime'      => $asset['source']['type'],
-                                'permalink' => $asset['source']['url'],
-                            ],
-                            'thumbnail' => [
-                                'width'     => '?',
-                                'height'    => '?',
-                                'size'      => $asset['thumbnail']['file']['size'],
-                                'mime'      => $asset['thumbnail']['file']['type'],
-                                'permalink' => $asset['thumbnail']['file']['url'],
-                            ],
-                        ]
+                        'subdefs'         => $subdefs
                     ];
                 }, $res['hydra:member']),
             ],

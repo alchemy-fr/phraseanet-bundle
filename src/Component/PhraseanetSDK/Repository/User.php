@@ -83,8 +83,8 @@ class User extends AbstractRepository
                     'name'          => $collection['title'],
                     'logo'          => '?',
                     'labels'        => [],
-                    'rights'        => '?',
-                    'statuses'      => '?',
+                    'rights'        => [],
+                    'statuses'      => [],
                 ];
                 foreach ($collection['children'] as $child) {
                     $collections[] = [
@@ -94,8 +94,8 @@ class User extends AbstractRepository
                         'name'          => $child['title'],
                         'logo'          => '?',
                         'labels'        => [],
-                        'rights'        => '?',
-                        'statuses'      => '?',
+                        'rights'        => [],
+                        'statuses'      => [],
                     ];
                 }
             }
@@ -103,7 +103,7 @@ class User extends AbstractRepository
             // turn array into object
             $collections = json_decode(json_encode($collections));
 
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($collections, true)), FILE_APPEND);
+//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($collections, true)), FILE_APPEND);
 
             $user = [
                 '@entity@'        => "http://api.phraseanet.com/api/objects/user",
@@ -136,6 +136,7 @@ class User extends AbstractRepository
             $user->setCollectionRights($collections);
             file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         }
+
         return $user;
     }
 

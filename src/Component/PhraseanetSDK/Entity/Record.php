@@ -173,7 +173,7 @@ class Record
     /**
      * Last updated date
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getUpdatedOn()
     {
@@ -183,7 +183,7 @@ class Record
     /**
      * Creation date
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getCreatedOn()
     {

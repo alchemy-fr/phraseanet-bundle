@@ -74,7 +74,7 @@ class MeCollection extends AbstractRepository
                     ];
                 }
             }
-file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($collections, true)), FILE_APPEND);
+// file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($collections, true)), FILE_APPEND);
 
             // turn array into object
             $collections = json_decode(json_encode($collections));
