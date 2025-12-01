@@ -89,11 +89,11 @@ class OrderElement
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getRecordId()
     {
-        return (int) $this->source->record->record_id;
+        return $this->source->record->record_id;
     }
 
     public function getStatus()

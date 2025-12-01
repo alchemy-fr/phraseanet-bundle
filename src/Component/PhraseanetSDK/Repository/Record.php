@@ -207,13 +207,13 @@ class Record extends AbstractRepository
             ],
             'metadata'               => $metadata,
             'status'                 => [],
-            'caption'                => array_map(function ($attribute) {
+            'caption'                => array_values(array_map(function ($attribute) {
                 return [
                     'meta_structure_id'   => $attribute['meta_structure_id'],
                     'name' => $attribute['name'],
                     'value'           => join(' ; ', $attribute['value']),
                 ];
-            }, $metadataByStruct_id),
+            }, $metadataByStruct_id)),
         ];
 
 

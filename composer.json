@@ -17,8 +17,8 @@
         }
     ],
     "require": {
-        "phraseanet/php-sdk": "@dev",
-        "ocramius/proxy-manager": "^1.0"
+        "ocramius/proxy-manager": "^1.0",
+        "phraseanet/php-sdk": "@dev"
     },
     "require-dev": {
         "symfony/symfony": "^2.7",

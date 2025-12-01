@@ -113,7 +113,7 @@ class Record
     /**
      * Get the record id
      *
-     * @return integer
+     * @return string
      */
     public function getRecordId()
     {
