@@ -91,14 +91,14 @@ class PhraseanetExtension extends ConfigurableExtension
     protected function buildEntityManagerFactory(ContainerBuilder $container, array $configuration)
     {
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $configuration['connection']['phrasea_secret']), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $configuration['connection']['secret']), FILE_APPEND);
         $adapterBuilder = new GuzzleAdapterBuilder();
 //var_dump($container);
 //die;
         $application = new Definition(Application::class, [
-            $adapterBuilder->buildDefinition($container, $configuration['connection']['phrasea_url'], $configuration['cache']),
-            $configuration['connection']['phrasea_client-id'],
-            $configuration['connection']['phrasea_secret'],
+            $adapterBuilder->buildDefinition($container, $configuration['connection']['url'], $configuration['cache']),
+            $configuration['connection']['client_id'],
+            $configuration['connection']['secret'],
         ]);
 
         if (isset($configuration['extended']) && $configuration['extended']) {
@@ -112,9 +112,8 @@ class PhraseanetExtension extends ConfigurableExtension
         $tokenProvider = new Definition(ChainedTokenProvider::class);
 
         $applicationTokenProvider = new Definition(ApplicationTokenProvider::class, [
-            $configuration['connection']['token'],
-            $configuration['connection']['phrasea_client-id'],
-            $configuration['connection']['phrasea_secret'],
+            $configuration['connection']['client_id'],
+            $configuration['connection']['secret'],
             $application
         ]);
 

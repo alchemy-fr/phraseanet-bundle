@@ -76,6 +76,7 @@ class Record extends AbstractRepository
             $metadataByStruct_id[$struct_id]['value'][] = $attribute['value'];
         }
 
+        $phrasea_type = (explode('/', $phraseaResult['source']['type']))[0];
         $response = [
             'databox_id'             => $phraseaResult['workspace']['id'],
             'record_id'              => $phraseaResult['id'],
@@ -118,12 +119,12 @@ class Record extends AbstractRepository
                 [ 'name' => 'Channels', 'value' => '?' ],
                 [ 'name' => 'ColorDepth', 'value' => '?' ],
                 [ 'name' => 'ColorSpace', 'value' => '?' ],
-                [ 'name' => 'FileSize', 'value' => $phraseaResult['thumbnail']['file']['size'] ],
+                [ 'name' => 'FileSize', 'value' => $phraseaResult['source']['size'] ],
                 [ 'name' => 'Height', 'value' => '?' ],
-                [ 'name' => 'MimeType', 'value' => '?' ],
+                [ 'name' => 'MimeType', 'value' => $phraseaResult['source']['type'] ],
                 [ 'name' => 'Width', 'value' => '?' ],
             ],
-            'phrasea_type'           => 'image',
+            'phrasea_type'           => $phrasea_type,
             'uuid'                   => '?',
             'subdefs'                => [
                 [
@@ -217,7 +218,7 @@ class Record extends AbstractRepository
         ];
 
 
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response, true)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($response, true), 0, 100)), FILE_APPEND);
 
         // turn array into object
         $response = json_decode(json_encode($response));
@@ -261,7 +262,7 @@ class Record extends AbstractRepository
     public function search(array $parameters = [], $pAPINumber = 1)
     {
         //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)), FILE_APPEND);
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($parameters, true)), FILE_APPEND);
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
         if(0) {
             $response = $this->query('POST', 'v'.$pAPINumber.'/searchraw/', array(), array_merge(
                 array('search_type' => 0),
@@ -308,7 +309,9 @@ class Record extends AbstractRepository
             ],
             [],
             [
-                'Accept' => 'application/ld+json'
+                'Accept' => 'application/ld+json',
+                 // todo phrasea: get right cookie name (depends on conf) ?
+                 'Accept-Language' => $_COOKIE['parade-standard-ml-lng'] ?? 'en',
             ]
         );
 
@@ -319,11 +322,6 @@ class Record extends AbstractRepository
         $res = $response->getResult();
         $results = [
             'results' => [
-                'count'   => count($res['hydra:member']),
-                'total'   => $res['hydra:totalItems'],
-                'limit'   => 50,
-                'offset'  => ($page - 1) * 50,
-                'facets'  => [],
                 'stories' => [],
                 'records' => array_map(function ($asset) {
                     $caption = [];
@@ -352,12 +350,13 @@ class Record extends AbstractRepository
                         ];
                     }
 
+                    $phrasea_type = (explode('/', $asset['source']['type']))[0];
                     return [
                         'record_id'       => $asset['id'],
                         'collection_id'   => $asset['referenceCollection']['id'],
                         'original_name'   => '?',
                         'mime'            => $asset['source']['type'],
-                        'type'            => '?',
+                        'type'            => $phrasea_type,
                         'cover_record_id' => null,
                         'created_on'      => $asset['createdAt'],
                         'updated_on'      => $asset['updatedAt'],
@@ -379,8 +378,15 @@ class Record extends AbstractRepository
                     ];
                 }, $res['hydra:member']),
             ],
+            'count'   => count($res['hydra:member']),
+            'took'    => 0,
+            'total'   => $res['hydra:totalItems'],
+            'facets'  => [],
+            'offset'  => ($page - 1) * 50,
+            'limit'   => 50,
+
         ];
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($results, true)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));

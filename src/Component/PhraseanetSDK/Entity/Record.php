@@ -237,7 +237,9 @@ class Record
      */
     public function getPhraseaType()
     {
-        return isset($this->source->type) ? $this->source->type : $this->source->phrasea_type;
+        $r = isset($this->source->type) ? $this->source->type : $this->source->phrasea_type;
+        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) -------> %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($this->source, true)), FILE_APPEND);
+        return $r;
     }
 
     /**

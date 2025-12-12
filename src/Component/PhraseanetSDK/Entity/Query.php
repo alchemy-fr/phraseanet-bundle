@@ -196,6 +196,8 @@ class Query
 	 */
     public function setSourceEntry($pKey, $pValue)
 	{
-		$this->source->$pKey = $pValue;
+    //    file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) ----------- set %s = %s\n", __FILE__, __LINE__, __FUNCTION__, $pKey, $pValue), FILE_APPEND);
+
+        $this->source->$pKey = $pValue;
 	}
 }

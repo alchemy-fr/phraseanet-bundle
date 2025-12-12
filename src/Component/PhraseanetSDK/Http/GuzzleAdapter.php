@@ -190,7 +190,7 @@ class GuzzleAdapter implements GuzzleAdapterInterface
         $locale,
         array $plugins = array()
     ) {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n================ locale %s / %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($locale, true), var_export($_COOKIE, true)), FILE_APPEND);
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n================ locale %s / %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($locale, true), var_export($_COOKIE, true)), FILE_APPEND);
         if (!is_string($endpoint)) {
             throw new InvalidArgumentException('API url endpoint must be a valid url');
         }

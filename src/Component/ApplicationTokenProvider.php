@@ -12,22 +12,21 @@ class ApplicationTokenProvider implements TokenProvider
      */
     private $token;
     private $application;
-    private $phrasea_client_id;
-    private $phrasea_secret;
+    private $client_id;
+    private $secret;
 
     /**
-     * @param string $token
-     * @param string $phrasea_client_id
-     * @param string $phraea_secret
+     * @param string $client_id
+     * @param string $secret
      * @param Application $application
      */
-    public function __construct($token, $phrasea_client_id, $phrasea_secret, $application)
+    public function __construct($client_id, $secret, $application)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n%s\n%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($token), $phrasea_client_id, $phrasea_secret), FILE_APPEND);
-        // $this->token = $token;
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(client_id='%s', secret='%s', ...)\n", __FILE__, __LINE__, __FUNCTION__, $client_id, $secret), FILE_APPEND);
         $this->application = $application;
-        $this->phrasea_client_id = $phrasea_client_id;
-        $this->phrasea_secret = $phrasea_secret;
+        $this->client_id = $client_id;
+        $this->secret = $secret;
+        $this->token = null;
     }
 
     /**
@@ -45,8 +44,8 @@ class ApplicationTokenProvider implements TokenProvider
 //            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $url), FILE_APPEND);
             $body = json_encode([
                 'grant_type' => 'client_credentials',
-                'client_id' => $this->phrasea_client_id, // "parade_dev_jy"
-                'client_secret' => $this->phrasea_secret, // "VA02cFsJrA4WQExRMt8iicelVUYcNIHQ"
+                'client_id' => $this->client_id, // "parade_dev_jy"
+                'client_secret' => $this->secret, // "VA02cFsJrA4WQExRMt8iicelVUYcNIHQ"
                 //          'scope' => 'super-admin',
             ]);
             $request = $guzzle->createRequest(

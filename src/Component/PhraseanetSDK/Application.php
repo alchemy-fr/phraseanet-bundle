@@ -39,24 +39,24 @@ class Application implements ApplicationInterface
         // file_put_contents("/var/parade/log.txt", sprintf("%s:%d\n", __FILE__, __LINE__), FILE_APPEND);
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $adapter->getBaseUrl()), FILE_APPEND);
 
-        foreach (array('phrasea_client-id', 'phrasea_secret') as $key) {
+        foreach (array('client_id', 'secret') as $key) {
             if (!isset($config[$key]) || !is_string($config[$key])) {
                 throw new InvalidArgumentException(sprintf('Missing or invalid parameter "%s"', $key));
             }
         }
 
         if (null === $adapter) {
-            if (!isset($config['phrasea_url']) || !is_string($config['phrasea_url'])) {
-                throw new InvalidArgumentException(sprintf('Missing or invalid parameter "phrasea_url"'));
+            if (!isset($config['url']) || !is_string($config['url'])) {
+                throw new InvalidArgumentException(sprintf('Missing or invalid parameter "url"'));
             }
 
-            $adapter = GuzzleAdapter::create($config['phrasea_url']);
+            $adapter = GuzzleAdapter::create($config['url']);
         }
 
         return new static(
             $adapter,
-            $config['phrasea_client-id'],
-            $config['phrasea_secret']
+            $config['client_id'],
+            $config['secret']
         );
     }
 
@@ -142,7 +142,7 @@ class Application implements ApplicationInterface
      */
     public function getOauth2Connector()
     {
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         if ($this->connector === null) {
             $this->connector = new OAuth2Connector($this->adapter, $this->clientId, $this->secret);
         }
@@ -150,7 +150,7 @@ class Application implements ApplicationInterface
         return $this->connector;
     }
 
-    /**
+     /**
      * {@inheritdoc}
      */
     public function getUploader($token)

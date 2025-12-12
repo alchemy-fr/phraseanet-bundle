@@ -38,6 +38,7 @@ class OAuth2Connector
      */
     public function __construct(GuzzleAdapter $adapter, $clientId, $secret)
     {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s, %s, %s)\n", __FILE__, __LINE__, __FUNCTION__, $adapter->getBaseUrl(), $clientId, $secret), FILE_APPEND);
         $this->adapter = $adapter;
         $this->clientId = $clientId;
         $this->secret = $secret;
@@ -92,6 +93,7 @@ class OAuth2Connector
             'client_secret' => $this->secret,
             'code' => $code,
         );
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
         try {
             $responseContent = $this->adapter->call(
@@ -100,8 +102,10 @@ class OAuth2Connector
                 array(),
                 $postFields
             );
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
             $data = json_decode($responseContent, true);
             $token = $data["access_token"];
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) ---> token=%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($token)), FILE_APPEND);
         } catch (BadResponseException $e) {
             $response = json_decode($e->getResponseBody(), true);
             $msg = isset($response['error']) ? $response['error'] : (isset($response['msg']) ? $response['msg'] : '');
