@@ -153,11 +153,11 @@ class Record
     /**
      * Get the record mime type
      *
-     * @return string
+     * @return string | null
      */
     public function getMimeType()
     {
-        return isset($this->source->mime) ? $this->source->mime : $this->source->mime_type;
+        return $this->source->mime;
     }
 
     /**
@@ -237,7 +237,7 @@ class Record
      */
     public function getPhraseaType()
     {
-        $r = isset($this->source->type) ? $this->source->type : $this->source->phrasea_type;
+        $r = $this->source->type ?? 'UNKNOWN';
         // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) -------> %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($this->source, true)), FILE_APPEND);
         return $r;
     }

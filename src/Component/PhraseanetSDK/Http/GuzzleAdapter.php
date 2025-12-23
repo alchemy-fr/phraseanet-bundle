@@ -172,7 +172,8 @@ class GuzzleAdapter implements GuzzleAdapterInterface
           //      'response' => json_decode($response->getBody(true), true),
                 'response' => $response->getBody(true),
             ]);
-       //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($ret, true)), FILE_APPEND);
+      //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($ret, true)), FILE_APPEND);
+     //   file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $ret), FILE_APPEND);
 
         return $ret;
     }

@@ -50,12 +50,12 @@ class Record extends AbstractRepository
             throw new RuntimeException('Response content is empty');
         }
 
-        $phraseaResult = $response->getResult();
+        $asset = $response->getResult();
 
         $metadata = [];
         $metadataByStruct_id = [];
 
-        foreach ($phraseaResult['attributes'] as $attribute) {
+        foreach ($asset['attributes'] as $attribute) {
             $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
             $struct_id = $attribute['definition']['id'] . '_' . $locale;
             $name = str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
@@ -76,136 +76,95 @@ class Record extends AbstractRepository
             $metadataByStruct_id[$struct_id]['value'][] = $attribute['value'];
         }
 
-        $phrasea_type = (explode('/', $phraseaResult['source']['type']))[0];
-        $response = [
-            'databox_id'             => $phraseaResult['workspace']['id'],
-            'record_id'              => $phraseaResult['id'],
-            'resource_id'            => $phraseaResult['id'],
-            'mime_type'              => $phraseaResult['source']['type'],
-            'title'                  => $phraseaResult['title'],
-            'original_name'          => '?',
-            'updated_on'             => $phraseaResult['updatedAt'],
-            'created_on'             => $phraseaResult['createdAt'],
-            'collection_id'          => $phraseaResult['referenceCollection']['id'],
-            'base_id'                => $phraseaResult['referenceCollection']['id'],
-            'sha256'                 => '?',
-            'thumbnail'              => [
-                'name'        => 'thumbnail',
-                'permalink'   => [
-                    'created_on'   => '?',
-                    'id'           => '?',
-                    'is_activated' => true,
-                    'label'        => $phraseaResult['title'],
-                    'updated_on'   => '?',
-                    'page_url'     => '?',
-                    'download_url' => '?',
-                    'url'          => $phraseaResult['thumbnail']['file']['url'],
-                ],
-                'height'      => '?',
-                'width'       => '?',
-                'filesize'    => $phraseaResult['thumbnail']['file']['size'],
-                'devices'     => [
-                    'screen'
-                ],
-                'player_type' => 'IMAGE',
-                'mime_type'   => $phraseaResult['thumbnail']['file']['type'],
-                'substituted' => false,
-                'created_on'  => '?',
-                'updated_on'  => '?',
-                'url'         => $phraseaResult['thumbnail']['file']['url'],
-                'url_ttl'     => '?',
-            ],
-            'technical_informations' => [
-                [ 'name' => 'Channels', 'value' => '?' ],
-                [ 'name' => 'ColorDepth', 'value' => '?' ],
-                [ 'name' => 'ColorSpace', 'value' => '?' ],
-                [ 'name' => 'FileSize', 'value' => $phraseaResult['source']['size'] ],
-                [ 'name' => 'Height', 'value' => '?' ],
-                [ 'name' => 'MimeType', 'value' => $phraseaResult['source']['type'] ],
-                [ 'name' => 'Width', 'value' => '?' ],
-            ],
-            'phrasea_type'           => $phrasea_type,
-            'uuid'                   => '?',
-            'subdefs'                => [
-                [
+        $subdefs = [];
+        if(array_key_exists('main', $asset)) {
+            $subdefs['document'] = [
                     'name'        => 'document',
                     'permalink'   => [
-                        'created_on'   => $phraseaResult['source']['createdAt'],
-                        'id'           => $phraseaResult['source']['id'],
+                        'created_on'   => $asset['source']['createdAt'],
+                        'id'           => $asset['source']['id'],
                         'is_activated' => true,
-                        'label'        => $phraseaResult['title'],
-                        'updated_on'   => $phraseaResult['source']['updatedAt'],
-                        'page_url'     => $phraseaResult['source']['id'],
+                        'label'        => $asset['title'],
+                        'updated_on'   => $asset['source']['updatedAt'],
+                        'page_url'     => $asset['source']['id'],
                         'download_url' => '?',
-                        'url'          => $phraseaResult['source']['url'],
+                        'url'          => $asset['source']['url'],
                     ],
                     'height'      => '?',
                     'width'       => '?',
-                    'filesize'    => $phraseaResult['source']['size'],
+                    'filesize'    => $asset['source']['size'],
                     'devices'     => [
                         'all'
                     ],
                     'player_type' => 'IMAGE',
-                    'mime_type'   => $phraseaResult['source']['type'],
+                    'mime_type'   => $asset['source']['type'],
                     'substituted' => false,
-                    'created_on'  => $phraseaResult['source']['createdAt'],
-                    'updated_on'  => $phraseaResult['source']['updatedAt'],
-                    'url'         => $phraseaResult['source']['url'],
+                    'created_on'  => $asset['source']['createdAt'],
+                    'updated_on'  => $asset['source']['updatedAt'],
+                    'url'         => $asset['source']['url'],
                     'url_ttl'     => '?',
+            ];
+        }
+        foreach(['preview' , 'thumbnail'] as $assetFile) {
+            if(!isset($asset[$assetFile])) {
+                continue;
+            }
+            $subdefs[$assetFile] = [
+                'name'        => '$assetFile',
+                'permalink'   => [
+                    'created_on'   => '?',
+                    'id'           => '?',
+                    'is_activated' => true,
+                    'label'        => $asset['title'],
+                    'updated_on'   => '?',
+                    'page_url'     => '?',
+                    'download_url' => '?',
+                    'url'          => $asset['$assetFile']['file']['url'],
                 ],
-                [
-                    'name'        => 'thumbnail',
-                    'permalink'   => [
-                        'created_on'   => '?',
-                        'id'           => '?',
-                        'is_activated' => true,
-                        'label'        => $phraseaResult['title'],
-                        'updated_on'   => '?',
-                        'page_url'     => '?',
-                        'download_url' => '?',
-                        'url'          => $phraseaResult['thumbnail']['file']['url'],
-                    ],
-                    'height'      => '?',
-                    'width'       => '?',
-                    'filesize'    => $phraseaResult['thumbnail']['file']['size'],
-                    'devices'     => [
-                        'screen'
-                    ],
-                    'player_type' => 'IMAGE',
-                    'mime_type'   => $phraseaResult['thumbnail']['file']['type'],
-                    'substituted' => false,
-                    'created_on'  => '?',
-                    'updated_on'  => '?',
-                    'url'         => $phraseaResult['thumbnail']['file']['url'],
-                    'url_ttl'     => '?',
+                'height'      => '?',
+                'width'       => '?',
+                'filesize'    => $asset['$assetFile']['file']['size'],
+                'devices'     => [
+                    'screen'
                 ],
-                [
-                    'name'        => 'preview',
-                    'permalink'   => [
-                        'created_on'   => '?',
-                        'id'           => '?',
-                        'is_activated' => true,
-                        'label'        => $phraseaResult['title'],
-                        'updated_on'   => '?',
-                        'page_url'     => '?',
-                        'download_url' => '?',
-                        'url'          => $phraseaResult['preview']['file']['url'],
-                    ],
-                    'height'      => '?',
-                    'width'       => '?',
-                    'filesize'    => $phraseaResult['preview']['file']['size'],
-                    'devices'     => [
-                        'screen'
-                    ],
-                    'player_type' => 'IMAGE',
-                    'mime_type'   => $phraseaResult['preview']['file']['type'],
-                    'substituted' => false,
-                    'created_on'  => '?',
-                    'updated_on'  => '?',
-                    'url'         => $phraseaResult['preview']['file']['url'],
-                    'url_ttl'     => '?',
-                ],
+                // todo phrasea: determine player_type from mime_type
+                'player_type' => 'IMAGE',
+                'mime_type'   => $asset['$assetFile']['file']['type'],
+                'substituted' => false,
+                'created_on'  => '?',
+                'updated_on'  => '?',
+                'url'         => $asset['$assetFile']['file']['url'],
+                'url_ttl'     => '?',
+            ];
+        }
+
+        $mime_type = $asset['source']['type'] ?? null;
+        $phrasea_type = $mime_type ? (explode('/', ($mime_type)))[0] : null;
+        $response = [
+            'databox_id'             => $asset['workspace']['id'],
+            'record_id'              => $asset['id'],
+            'resource_id'            => $asset['id'],
+            'mime_type'              => $mime_type,
+            'title'                  => $asset['title'],
+            'original_name'          => '?',
+            'updated_on'             => $asset['updatedAt'],
+            'created_on'             => $asset['createdAt'],
+            'collection_id'          => $asset['referenceCollection']['id'],
+            'base_id'                => $asset['referenceCollection']['id'],
+            'sha256'                 => '?',
+            'thumbnail'              => $subdefs['thumbnail'] ?? null,
+            'technical_informations' => [
+                [ 'name' => 'Channels', 'value' => '?' ],
+                [ 'name' => 'ColorDepth', 'value' => '?' ],
+                [ 'name' => 'ColorSpace', 'value' => '?' ],
+                [ 'name' => 'FileSize', 'value' => $asset['source']['size'] ?? 0 ],
+                [ 'name' => 'Height', 'value' => '?' ],
+                [ 'name' => 'MimeType', 'value' => $mime_type ],
+                [ 'name' => 'Width', 'value' => '?' ],
             ],
+            'phrasea_type'           => $phrasea_type,
+            'uuid'                   => '?',
+            'subdefs'                => array_values($subdefs),
             'metadata'               => $metadata,
             'status'                 => [],
             'caption'                => array_values(array_map(function ($attribute) {
@@ -294,18 +253,21 @@ class Record extends AbstractRepository
                 return Query::fromValue($this->em, $results);
             }
         }
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
         $limit = isset($res->limit) ? $res->limit : 10;
         $offset = isset($res->offset) ? $res->offset : 0;
         $page = (int)($offset / $limit) + 1;        // todo phrasea : check this calculation is correct
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $response = $this->query(
             'GET',
             '/assets',
             [
                 'page'    => $page,
                 'limit'   => $limit,
-                'parents' => $parameters['bases'],
-                'query'   => $parameters['query']
+            //    'parents' => $parameters['bases'],
+            //    'query'   => $parameters['query'],
+                'conditions' => ['@isStory = false', '@type EXISTS'],
             ],
             [],
             [
@@ -314,12 +276,15 @@ class Record extends AbstractRepository
                  'Accept-Language' => $_COOKIE['parade-standard-ml-lng'] ?? 'en',
             ]
         );
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
         if ($response->isEmpty()) {
             throw new RuntimeException('Response content is empty');
         }
 
         $res = $response->getResult();
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($res, true)), FILE_APPEND);
+
         $results = [
             'results' => [
                 'stories' => [],
@@ -350,21 +315,31 @@ class Record extends AbstractRepository
                         ];
                     }
 
-                    $phrasea_type = (explode('/', $asset['source']['type']))[0];
+                    // todo phrasea: do we need all tags ? (requires GET /tags call)
+                    $flags = [];
+                    foreach ($asset['tags'] ?? [] as $tag) {
+                        $flags[$tag['name']] = true;
+                    }
+
+                    $mime_type = $asset['source']['type'] ?? null;
+                    $phrasea_type = $mime_type ? (explode('/', ($mime_type)))[0] : null;
                     return [
                         'record_id'       => $asset['id'],
                         'collection_id'   => $asset['referenceCollection']['id'],
+                        'uuid'            => '?',
+                        'flags_bitfield'  => 0,
+                        'sha256'          => '?',
                         'original_name'   => '?',
-                        'mime'            => $asset['source']['type'],
+                        'mime'            => $mime_type,
                         'type'            => $phrasea_type,
                         'cover_record_id' => null,
                         'created_on'      => $asset['createdAt'],
                         'updated_on'      => $asset['updatedAt'],
                         'coll_id'         => $asset['referenceCollection']['id'],
                         'collection_name' => $asset['referenceCollection']['title'],
-                        'width'           => '?',
-                        'height'          => '?',
-                        'size'            => $asset['source']['size'],
+                        'width'           => 0,
+                        'height'          => 0,
+                        'size'            => $asset['source']['size'] ?? null,
                         'base_id'         => $asset['referenceCollection']['id'],
                         'databox_id'      => $asset['workspace']['id'],
                         'databox_name'    => $asset['workspace']['name'],
@@ -372,8 +347,26 @@ class Record extends AbstractRepository
                         'title'           => $asset['title'],
                         'caption'         => $caption,
                         'caption_all'     => join("\n", $caption_all),
-                        'metadata_tags'   => [],
-                        'flags'           => [],
+                        'metadata_tags'   => [
+                            "Aperture" => 0,
+                            "CameraModel" => "?",
+                            "Channels" => 0,
+//                            "ColorDepth": 8,
+//                            "ColorSpace": 0,
+                            "FileSize" => $asset['source']['size'] ?? 0,
+//                           "FlashFired": false,
+//                            "FocalLength": 35,
+//                            "Height": 4000,
+//                            "HyperfocalDistance": 5.8866667511817,
+//                            "ISO": 100,
+//                            "LightValue": 14.562719427049,
+//                            "MimeType": "image/jpeg",
+//                            "Orientation": 0,
+//                            "ShutterSpeed": 0.005,
+//                            "Width": 6000,
+//                            "ThumbnailOrientation": "L"
+                        ],
+                        'flags'           => $flags,
                         'subdefs'         => $subdefs
                     ];
                 }, $res['hydra:member']),
@@ -381,12 +374,27 @@ class Record extends AbstractRepository
             'count'   => count($res['hydra:member']),
             'took'    => 0,
             'total'   => $res['hydra:totalItems'],
-            'facets'  => [],
-            'offset'  => ($page - 1) * 50,
-            'limit'   => 50,
+            'facets'  => array_values(array_map(function ($k, $facet) {
+                return [
+                    'name'   => $k,
+                    'field' => $facet['meta']['title'],
+                    'values' => array_map(function ($bucket) use ($k) {
+                        $v = $bucket['key_as_string'] ?? $bucket['key'];
+                        $rv = $bucket['key'];
+                        return [
+                            'value' => is_array($v) ? $v['label'] : $v,
+                            'raw_value' => is_array($rv) ? $rv['value'] : $rv,
+                            'count' => $bucket['doc_count'],
+                            'query' => $k . '="' . (is_array($rv) ? $rv['value'] : $rv) . '"',
+                        ];
+                    }, $facet['buckets'] ?? []),
+                ];
+            }, array_keys($res['facets'] ?? []), array_values($res['facets'] ?? []))),
+            'offset'  => ($page - 1) * $limit,
+            'limit'   => $limit,
 
         ];
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));
