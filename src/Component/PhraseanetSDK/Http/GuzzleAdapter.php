@@ -147,19 +147,27 @@ class GuzzleAdapter implements GuzzleAdapterInterface
             $request = $this->guzzle->createRequest($method, $path, array_merge($acceptHeader, $headers), $body);
 
             $this->addRequestParameters($request, $query, $postFields, $files);
-//file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($request->getHeaders(), true)), FILE_APPEND);
+// file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($request->getHeaders(), true)), FILE_APPEND);
 
             $response = $request->send();
 
 //            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response->getBody(true), true)), FILE_APPEND);
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
         } catch (CurlException $e) {
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw new RuntimeException($e->getMessage(), $e->getErrorNo(), $e);
         } catch (GuzzleBadResponse $e) {
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw BadResponseException::fromGuzzleResponse($e);
         } catch (GuzzleException $e) {
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+        } catch (\Exception $e) {
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
 
         $ret =             json_encode([

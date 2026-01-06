@@ -34,8 +34,9 @@ class ApplicationTokenProvider implements TokenProvider
      */
     public function getToken()
     {
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($this->token)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($this->token)), FILE_APPEND);
         if(!$this->token) {
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
             $baseUrl = $this->application->getAdapter()->getBaseUrl();
             $adapter = $this->application->getAdapter();
             $guzzle = $adapter->getGuzzle();
@@ -44,9 +45,10 @@ class ApplicationTokenProvider implements TokenProvider
 //            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $url), FILE_APPEND);
             $body = json_encode([
                 'grant_type' => 'client_credentials',
-                'client_id' => $this->client_id, // "parade_dev_jy"
-                'client_secret' => $this->secret, // "VA02cFsJrA4WQExRMt8iicelVUYcNIHQ"
-                //          'scope' => 'super-admin',
+                'client_id' => $this->client_id,
+                'client_secret' => $this->secret,
+          //      'scope' => 'super-admin',
+                'scope' => 'openid',
             ]);
             $request = $guzzle->createRequest(
                 'POST',
@@ -60,7 +62,7 @@ class ApplicationTokenProvider implements TokenProvider
                 []
             );
             $response = $request->send();
-//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $response->getBody(true)), FILE_APPEND);
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $response->getBody(true)), FILE_APPEND);
 
             $tokenData = json_decode($response->getBody(true), true);
             $this->token = $tokenData['access_token'];

@@ -78,6 +78,8 @@ class Record extends AbstractRepository
 
         $subdefs = [];
         if(array_key_exists('main', $asset)) {
+            $mime_type = $asset['source']['type'];
+            $player_type = strtoupper((explode('/', $mime_type))[0]);
             $subdefs['document'] = [
                     'name'        => 'document',
                     'permalink'   => [
@@ -96,8 +98,9 @@ class Record extends AbstractRepository
                     'devices'     => [
                         'all'
                     ],
-                    'player_type' => 'IMAGE',
-                    'mime_type'   => $asset['source']['type'],
+                    // todo phrasea: determine player_type from mime_type
+                    'player_type' => $player_type,
+                    'mime_type'   => $mime_type,
                     'substituted' => false,
                     'created_on'  => $asset['source']['createdAt'],
                     'updated_on'  => $asset['source']['updatedAt'],
@@ -109,8 +112,10 @@ class Record extends AbstractRepository
             if(!isset($asset[$assetFile])) {
                 continue;
             }
+            $mime_type = $asset[$assetFile]['file']['type'];
+            $player_type = strtoupper((explode('/', $mime_type))[0]);
             $subdefs[$assetFile] = [
-                'name'        => '$assetFile',
+                'name'        => $assetFile,
                 'permalink'   => [
                     'created_on'   => '?',
                     'id'           => '?',
@@ -119,21 +124,21 @@ class Record extends AbstractRepository
                     'updated_on'   => '?',
                     'page_url'     => '?',
                     'download_url' => '?',
-                    'url'          => $asset['$assetFile']['file']['url'],
+                    'url'          => $asset[$assetFile]['file']['url'],
                 ],
                 'height'      => '?',
                 'width'       => '?',
-                'filesize'    => $asset['$assetFile']['file']['size'],
+                'filesize'    => $asset[$assetFile]['file']['size'],
                 'devices'     => [
                     'screen'
                 ],
                 // todo phrasea: determine player_type from mime_type
-                'player_type' => 'IMAGE',
-                'mime_type'   => $asset['$assetFile']['file']['type'],
+                'player_type' => $player_type,
+                'mime_type'   => $mime_type,
                 'substituted' => false,
                 'created_on'  => '?',
                 'updated_on'  => '?',
-                'url'         => $asset['$assetFile']['file']['url'],
+                'url'         => $asset[$assetFile]['file']['url'],
                 'url_ttl'     => '?',
             ];
         }
@@ -145,6 +150,7 @@ class Record extends AbstractRepository
             'record_id'              => $asset['id'],
             'resource_id'            => $asset['id'],
             'mime_type'              => $mime_type,
+            'mime'                   => $mime_type,
             'title'                  => $asset['title'],
             'original_name'          => '?',
             'updated_on'             => $asset['updatedAt'],
@@ -163,6 +169,7 @@ class Record extends AbstractRepository
                 [ 'name' => 'Width', 'value' => '?' ],
             ],
             'phrasea_type'           => $phrasea_type,
+            'type'                   => $phrasea_type,
             'uuid'                   => '?',
             'subdefs'                => array_values($subdefs),
             'metadata'               => $metadata,
@@ -221,7 +228,7 @@ class Record extends AbstractRepository
     public function search(array $parameters = [], $pAPINumber = 1)
     {
         //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)), FILE_APPEND);
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
         if(0) {
             $response = $this->query('POST', 'v'.$pAPINumber.'/searchraw/', array(), array_merge(
                 array('search_type' => 0),
@@ -255,8 +262,8 @@ class Record extends AbstractRepository
         }
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
-        $limit = isset($res->limit) ? $res->limit : 10;
-        $offset = isset($res->offset) ? $res->offset : 0;
+        $limit = $parameters['limit'] ?? 10;
+        $offset = $parameters['offset'] ?? 0;
         $page = (int)($offset / $limit) + 1;        // todo phrasea : check this calculation is correct
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $response = $this->query(
@@ -265,15 +272,18 @@ class Record extends AbstractRepository
             [
                 'page'    => $page,
                 'limit'   => $limit,
-            //    'parents' => $parameters['bases'],
-            //    'query'   => $parameters['query'],
-                'conditions' => ['@isStory = false', '@type EXISTS'],
+                'parents' => $parameters['bases'],
+                'query'   => $parameters['query'],
+               // 'conditions' => ['@isStory = false', '@type EXISTS'],  // @type EXISTS to skip "bad" assets
+                'conditions' => ['@isStory = false'],
             ],
             [],
             [
                 'Accept' => 'application/ld+json',
-                 // todo phrasea: get right cookie name (depends on conf) ?
-                 'Accept-Language' => $_COOKIE['parade-standard-ml-lng'] ?? 'en',
+                // todo phrasea: get right cookie name (depends on conf) ?
+            //    'Accept-Language' => $_COOKIE['parade-standard-ml-lng'] ?? 'en',
+                'Accept-Encoding' => 'gzip, deflate, br',
+                'Cache-Control' => 'no-cache',
             ]
         );
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
@@ -292,6 +302,9 @@ class Record extends AbstractRepository
                     $caption = [];
                     $caption_all = [];
                     foreach ($asset['attributes'] as $attribute) {
+                        if($attribute['value'] === null || $attribute['value'] === '') {
+                            continue;
+                        }
                         $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
                         $name =  str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
                         if (!array_key_exists($name, $caption)) {
@@ -394,7 +407,7 @@ class Record extends AbstractRepository
             'limit'   => $limit,
 
         ];
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));
