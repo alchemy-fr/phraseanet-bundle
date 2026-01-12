@@ -67,7 +67,7 @@ class ApplicationTokenProvider implements TokenProvider
             $tokenData = json_decode($response->getBody(true), true);
             $this->token = $tokenData['access_token'];
 
-//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($this->token)), FILE_APPEND);
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, Application::shortToken($this->token)), FILE_APPEND);
         }
         return $this->token;
     }
