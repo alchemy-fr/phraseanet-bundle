@@ -391,14 +391,15 @@ class Record extends AbstractRepository
                 return [
                     'name'   => $k,
                     'field' => $facet['meta']['title'],
-                    'values' => array_map(function ($bucket) use ($k) {
+                    'values' => array_map(function ($bucket) use ($k, $facet) {
                         $v = $bucket['key_as_string'] ?? $bucket['key'];
                         $rv = $bucket['key'];
                         return [
                             'value' => is_array($v) ? $v['label'] : $v,
                             'raw_value' => is_array($rv) ? $rv['value'] : $rv,
                             'count' => $bucket['doc_count'],
-                            'query' => $k . '="' . (is_array($rv) ? $rv['value'] : $rv) . '"',
+                            'query' => $facet['meta']['title'] . '="' . (is_array($rv) ? $rv['value'] : $rv) . '"',
+                            // 'query' => $k . '="' . (is_array($rv) ? $rv['value'] : $rv) . '"',
                         ];
                     }, $facet['buckets'] ?? []),
                 ];
