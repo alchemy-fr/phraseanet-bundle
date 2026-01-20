@@ -5,6 +5,7 @@ namespace Alchemy\Phraseanet\PhraseanetSDK\Repository;
 use Alchemy\Phraseanet\PhraseanetSDK\AbstractRepository;
 use Alchemy\Phraseanet\PhraseanetSDK\Entity\Query;
 use Alchemy\Phraseanet\PhraseanetSDK\Exception\RuntimeException;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Record extends AbstractRepository
@@ -264,8 +265,22 @@ class Record extends AbstractRepository
 
         $limit = $parameters['limit'] ?? 10;
         $offset = $parameters['offset'] ?? 0;
-        $page = (int)($offset / $limit) + 1;        // todo phrasea : check this calculation is correct
+        $page = (int)($offset / $limit) + 1;
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
+        $conditions = ['@isStory = false'];
+        // $conditions[] = 'crash > "2026-01-30"';
+        if(array_key_exists('date_field', $parameters)) {
+            if(array_key_exists('date_min', $parameters)) {
+                $date_min = new \DateTime($parameters['date_min']);
+                $conditions[] = sprintf('%s >= "%s"', $parameters['date_field'], $date_min->format(DateTime::ATOM));
+            }
+            if(array_key_exists('date_max', $parameters)) {
+                $date_max = new \DateTime($parameters['date_max']);
+                $conditions[] = sprintf('%s <= "%s"', $parameters['date_field'], $date_max->format(DateTime::ATOM));
+            }
+        }
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\nconditions = %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($conditions, true)), FILE_APPEND);
+
         $response = $this->query(
             'GET',
             '/assets',
@@ -274,14 +289,11 @@ class Record extends AbstractRepository
                 'limit'   => $limit,
                 'parents' => $parameters['bases'],
                 'query'   => $parameters['query'],
-               // 'conditions' => ['@isStory = false', '@type EXISTS'],  // @type EXISTS to skip "bad" assets
-                'conditions' => ['@isStory = false'],
+                'conditions' => $conditions,
             ],
             [],
             [
                 'Accept' => 'application/ld+json',
-                // todo phrasea: get right cookie name (depends on conf) ?
-            //    'Accept-Language' => $_COOKIE['parade-standard-ml-lng'] ?? 'en',
                 'Accept-Encoding' => 'gzip, deflate, br',
                 'Cache-Control' => 'no-cache',
             ]

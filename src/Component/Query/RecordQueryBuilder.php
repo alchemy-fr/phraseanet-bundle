@@ -312,6 +312,7 @@ class RecordQueryBuilder
         if ($minDate == null && $maxDate == null) {
             throw new \InvalidArgumentException('At least one of min or max date must be provided');
         }
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) fieldName = %s\n", __FILE__, __LINE__, __FUNCTION__, $fieldName), FILE_APPEND);
 
         $this->dateCriterionField = $fieldName;
         $this->dateCriterionMin = $minDate;
@@ -503,6 +504,7 @@ class RecordQueryBuilder
                 return $query;
             }
 
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) query = %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($query, true)), FILE_APPEND);
             return $query;
         }
 
