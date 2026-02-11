@@ -44,7 +44,6 @@ class EntityManagerRegistry
 
     public function getRepository($instanceAlias, $name)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s, %s)\n",__FILE__, __LINE__, __FUNCTION__, $instanceAlias, $name), FILE_APPEND);
         return $this->getEntityManager($instanceAlias)->getRepository($name);
     }
 

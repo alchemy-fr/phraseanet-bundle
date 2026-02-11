@@ -75,7 +75,6 @@ class EntityManager
         if (isset($this->repositories[$name])) {
             return $this->repositories[$name];
         }
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s)\n",__FILE__, __LINE__, __FUNCTION__, $name), FILE_APPEND);
 
         $className = ucfirst($name);
         $objectName = sprintf('\\Alchemy\\Phraseanet\\PhraseanetSDK\\Repository\\%s', $className);
@@ -88,14 +87,11 @@ class EntityManager
             return $this->repositories['orders'] = new OrderRepository($this, $this->adapter);
         }
 
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s)\n",__FILE__, __LINE__, __FUNCTION__, $objectName), FILE_APPEND);
         if (!class_exists($objectName)) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s) ??????????\n",__FILE__, __LINE__, __FUNCTION__, $objectName), FILE_APPEND);
             throw new Exception\InvalidArgumentException(
                 sprintf('Class %s does not exists', $objectName)
             );
         }
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s() ; %s\n",__FILE__, __LINE__, __FUNCTION__, $objectName), FILE_APPEND);
 
         return $this->repositories[$name] = new $objectName($this);
     }

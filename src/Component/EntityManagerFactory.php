@@ -73,7 +73,6 @@ class EntityManagerFactory
      */
     public function getEntityManager()
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s()\n",__FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $token = $this->tokenProvider->getToken();
         $options = $this->getOptions();
 
@@ -90,7 +89,6 @@ class EntityManagerFactory
      */
     public function getRepository($name)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s)\n",__FILE__, __LINE__, __FUNCTION__, $name), FILE_APPEND);
         $configuration = $this->getProxyFactoryConfiguration();
 
         $factory = new LazyLoadingValueHolderFactory($configuration);

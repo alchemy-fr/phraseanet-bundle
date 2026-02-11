@@ -147,28 +147,18 @@ class GuzzleAdapter implements GuzzleAdapterInterface
             $request = $this->guzzle->createRequest($method, $path, array_merge($acceptHeader, $headers), $body);
 
             $this->addRequestParameters($request, $query, $postFields, $files);
-// file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($request->getHeaders(), true)), FILE_APPEND);
 
             $response = $request->send();
 
-//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response->getBody(true), true)), FILE_APPEND);
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
-
         } catch (CurlException $e) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw new RuntimeException($e->getMessage(), $e->getErrorNo(), $e);
         } catch (GuzzleBadResponse $e) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw BadResponseException::fromGuzzleResponse($e);
         } catch (GuzzleException $e) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         } catch (\Exception $e) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) %s\n", __FILE__, __LINE__, __FUNCTION__, $e->getMessage()), FILE_APPEND);
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
-
 
         $ret =             json_encode([
                 'meta'     => [
@@ -180,8 +170,6 @@ class GuzzleAdapter implements GuzzleAdapterInterface
           //      'response' => json_decode($response->getBody(true), true),
                 'response' => $response->getBody(true),
             ]);
-      //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($ret, true)), FILE_APPEND);
-     //   file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $ret), FILE_APPEND);
 
         return $ret;
     }
@@ -199,19 +187,9 @@ class GuzzleAdapter implements GuzzleAdapterInterface
         $locale,
         array $plugins = array()
     ) {
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n================ locale %s / %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($locale, true), var_export($_COOKIE, true)), FILE_APPEND);
         if (!is_string($endpoint)) {
             throw new InvalidArgumentException('API url endpoint must be a valid url');
         }
-
-//        $versionMountPoint = ApplicationInterface::API_MOUNT_POINT; # /api
-//
-//        // test if url already end with API_MOUNT_POINT
-//        $mountPoint = substr(trim($endpoint, '/'), -strlen($versionMountPoint));
-//
-//        if ($versionMountPoint !== $mountPoint) {
-//            $endpoint = sprintf('%s%s/', trim($endpoint, '/'), $versionMountPoint);
-//        }
 
         $guzzle = new Guzzle($endpoint);
         $guzzle->setUserAgent(sprintf(
@@ -231,15 +209,12 @@ class GuzzleAdapter implements GuzzleAdapterInterface
 
     private function addRequestParameters(RequestInterface $request, $query, $postFields, $files)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         foreach ($query as $name => $value) {
             $request->getQuery()->add($name, $value);
         }
 
         if ($request instanceof EntityEnclosingRequestInterface) {
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
             if ($request->getHeader('Content-Type') == 'application/json') {
-         //       $request->getHeaders()->offsetUnset('Content-Type');
                 $request->setBody(json_encode($postFields));
 
                 return;

@@ -65,7 +65,6 @@ abstract class AbstractRepository
      */
     protected function query($method, $path, $query = array(), $postFields = array(), array $headers = array())
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         try {
             $response = $this->getAdapter()->call($method, $path, $query, $postFields, array(), $headers);
         } catch (BadResponseException $e) {
@@ -85,7 +84,6 @@ abstract class AbstractRepository
             }
         }
 
-   //     file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response, true)), FILE_APPEND);
         return $response;
     }
 }

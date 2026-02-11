@@ -120,6 +120,20 @@ class Record
         return $this->source->record_id;
     }
 
+    public function getTrackingId(): string
+    {
+        return $this->source->tracking_id ?? $this->source->record_id;
+    }
+    public function getTrackingTitle(): string
+    {
+        return $this->getTitle();
+    }
+    public function getMetrics()
+    {
+        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) source=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($this->source->metrics, true)), FILE_APPEND);
+        return $this->source->metrics;
+    }
+
     /**
      * Get the databox id
      *

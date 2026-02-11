@@ -21,22 +21,7 @@ class Record extends AbstractRepository
      */
     public function findById($databoxId, $recordId, $disableCache = false)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s, %s, %s)\n", __FILE__, __LINE__, __FUNCTION__, $databoxId, $recordId, $disableCache), FILE_APPEND);
-//        $path = sprintf('v1/records/%s/%s/', $databoxId, $recordId);
-//        $query = [];
-//
-//        if (true === $disableCache) {
-//            $query['t'] = time();
-//        }
-//
-//        $response = $this->query('GET', $path, $query);
-//
-//        if (true !== $response->hasProperty('record')) {
-//            throw new RuntimeException('Missing "record" property in response content');
-//        }
-//
-//        return \Alchemy\Phraseanet\PhraseanetSDK\Entity\Record::fromValue($response->getProperty('record'));
-
+ //       file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s, %s, %s)\n", __FILE__, __LINE__, __FUNCTION__, $databoxId, $recordId, $disableCache), FILE_APPEND);
         $response = $this->query(
             'GET',
             '/assets/' . urlencode($recordId),
@@ -53,6 +38,41 @@ class Record extends AbstractRepository
 
         $asset = $response->getResult();
 
+        try {
+            $response = $this->query(
+                'GET',
+                '/assets/' . urlencode($asset['id']) . '/metrics',
+                [],
+                [],
+                [
+                    'Accept' => 'application/ld+json'
+                ]
+            );
+            $metrics = $response->getResult();
+            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($metrics, true)), FILE_APPEND);
+        }
+        catch (\Exception $e) {
+            $metrics = [
+//                "nb_plays" => "?",
+//                "nb_unique_visitors_plays" => "?",
+//                "nb_impressions" => "?",
+//                "nb_unique_visitors_impressions" => "?",
+//                "nb_finishes" => "?",
+//                "sum_time_progress" => "?",
+//                "nb_plays_with_tip" => "?",
+//                "sum_fullscreen_plays" => "?",
+//                "nb_plays_with_ml" => "?",
+//                "play_rate" => "?",
+//                "finish_rate" => "?",
+//                "fullscreen_rate" => "?",
+//                "avg_time_watched" => "?",
+//                "avg_completion_rate" => "?",
+//                "avg_time_to_play" => "?",
+//                "avg_media_length" => "?",
+//                "idsubdatatable" => "?"
+            ];
+        }
+
         $metadata = [];
         $metadataByStruct_id = [];
 
@@ -60,6 +80,9 @@ class Record extends AbstractRepository
             $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
             $struct_id = $attribute['definition']['id'] . '_' . $locale;
             $name = str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
+            if($name === 'MatomoMediaMetrics_') {
+                continue;       // ignore former phraseanet
+            }
             $metadata[] = [
                 'meta_structure_id' => $struct_id,
                 'name'              => $name,
@@ -179,16 +202,17 @@ class Record extends AbstractRepository
                 return [
                     'meta_structure_id'   => $attribute['meta_structure_id'],
                     'name' => $attribute['name'],
-                    'value'           => join(' ; ', $attribute['value']),
+                    'value'          => join(' ; ', $attribute['value']),
                 ];
             }, $metadataByStruct_id)),
+            'tracking_id'            => $asset['tracking_id'] ?? $asset['id'],
+            'tracking_title'         => $asset['title'],
+            'metrics'                => $metrics,
         ];
-
-
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($response, true), 0, 100)), FILE_APPEND);
 
         // turn array into object
         $response = json_decode(json_encode($response));
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) response=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response, true)), FILE_APPEND);
 
         return \Alchemy\Phraseanet\PhraseanetSDK\Entity\Record::fromValue($response);
     }
@@ -228,47 +252,12 @@ class Record extends AbstractRepository
      */
     public function search(array $parameters = [], $pAPINumber = 1)
     {
-        //  file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)), FILE_APPEND);
         file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
-        if(0) {
-            $response = $this->query('POST', 'v'.$pAPINumber.'/searchraw/', array(), array_merge(
-                array('search_type' => 0),
-                $parameters
-            ));
-
-            if ($response->isEmpty()) {
-                throw new RuntimeException('Response content is empty');
-            }
-
-            $results = $res = $response->getResult();
-            if ($pAPINumber == 3) {
-                $results = new \stdClass();
-                $results->results = new \stdClass();
-                foreach ($res->results as $key => $r) {
-                    $results->results->records[$key] = $r->_source;
-                }
-
-                if (!isset($results->results->records)) {
-                    $results->results->records = [];
-                }
-
-                $results->results->stories = [];
-                $results->facets = $res->facets;
-                $results->count = $res->count;
-                $results->total = $res->total;
-                $results->limit = isset($res->limit) ? $res->limit : 10;  // TODO: just $res->limit after a phraseanet PR in searchraw
-                $results->offset = isset($res->offset) ? $res->offset : 0;  // TODO: just $res->offset after a phraseanet PR
-                return Query::fromValue($this->em, $results);
-            }
-        }
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
 
         $limit = $parameters['limit'] ?? 10;
         $offset = $parameters['offset'] ?? 0;
         $page = (int)($offset / $limit) + 1;
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $conditions = ['@isStory = false'];
-        // $conditions[] = 'crash > "2026-01-30"';
         if(array_key_exists('date_field', $parameters)) {
             if(array_key_exists('date_min', $parameters)) {
                 $date_min = new \DateTime($parameters['date_min']);
@@ -279,7 +268,6 @@ class Record extends AbstractRepository
                 $conditions[] = sprintf('%s <= "%s"', $parameters['date_field'], $date_max->format(DateTime::ATOM));
             }
         }
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\nconditions = %s\n", __FILE__, __LINE__, __FUNCTION__, var_export($conditions, true)), FILE_APPEND);
 
         $response = $this->query(
             'GET',
@@ -298,14 +286,12 @@ class Record extends AbstractRepository
                 'Cache-Control' => 'no-cache',
             ]
         );
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
-
         if ($response->isEmpty()) {
             throw new RuntimeException('Response content is empty');
         }
 
         $res = $response->getResult();
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($res, true)), FILE_APPEND);
+        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($res, true)), FILE_APPEND);
 
         $results = [
             'results' => [
@@ -319,6 +305,9 @@ class Record extends AbstractRepository
                         }
                         $locale = array_key_exists('locale', $attribute) ? strtoupper($attribute['locale']) : '';
                         $name =  str_replace(' ', '', ucwords($attribute['definition']['name'])) . $locale;
+                        if($name === 'MatomoMediaMetrics_') {
+                            continue;       // ignore former phraseanet
+                        }
                         if (!array_key_exists($name, $caption)) {
                             $caption[$name] = [];
                         }
@@ -392,7 +381,8 @@ class Record extends AbstractRepository
 //                            "ThumbnailOrientation": "L"
                         ],
                         'flags'           => $flags,
-                        'subdefs'         => $subdefs
+                        'subdefs'         => $subdefs,
+                        'metrics' => null,
                     ];
                 }, $res['hydra:member']),
             ],
@@ -420,7 +410,7 @@ class Record extends AbstractRepository
             'limit'   => $limit,
 
         ];
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
+        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));

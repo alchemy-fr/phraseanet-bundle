@@ -16,7 +16,6 @@ class GuzzleAdapterBuilder
      */
     public function buildDefinition(ContainerBuilder $container, $instanceUrl, array $cacheConfig = null)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $instanceUrl), FILE_APPEND);
         $plugins = $this->getPluginReferences($container);
 
         if ($cacheConfig && $cacheConfig['type'] !== 'none') {

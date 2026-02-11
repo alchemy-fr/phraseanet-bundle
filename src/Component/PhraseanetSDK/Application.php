@@ -36,9 +36,6 @@ class Application implements ApplicationInterface
      */
     public static function create(array $config, GuzzleAdapter $adapter = null)
     {
-        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d\n", __FILE__, __LINE__), FILE_APPEND);
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $adapter->getBaseUrl()), FILE_APPEND);
-
         foreach (array('client_id', 'secret') as $key) {
             if (!isset($config[$key]) || !is_string($config[$key])) {
                 throw new InvalidArgumentException(sprintf('Missing or invalid parameter "%s"', $key));
@@ -142,7 +139,6 @@ class Application implements ApplicationInterface
      */
     public function getOauth2Connector()
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         if ($this->connector === null) {
             $this->connector = new OAuth2Connector($this->adapter, $this->clientId, $this->secret);
         }
@@ -169,7 +165,6 @@ class Application implements ApplicationInterface
      */
     public function getEntityManager($token)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s('%s')\n",__FILE__, __LINE__, __FUNCTION__, self::shortToken($token)), FILE_APPEND);
         self::assertValidToken($token);
 
         if (!isset($this->entityManagers[$token])) {
@@ -208,7 +203,6 @@ class Application implements ApplicationInterface
 
     private function getAdapterByToken($token)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s('%s')\n", __FILE__, __LINE__, __FUNCTION__, self::shortToken($token)), FILE_APPEND);
         if (!isset($this->adapters[$token])) {
             $this->adapters[$token] = new APIGuzzleAdapter(
                 new ConnectedGuzzleAdapter(

@@ -237,7 +237,7 @@ class Story extends AbstractRepository
             'limit'   => $limit,
 
         ];
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
+        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s...\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));

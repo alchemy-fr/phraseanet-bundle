@@ -76,7 +76,6 @@ class User
      */
     public function __construct(\stdClass $source)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $this->source = $source;
     }
 
@@ -429,7 +428,6 @@ class User
      */
     public function setCollectionRights(array $collectionRights)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $this->collectionRights = $collectionRights;
         $this->hasCollectionRights = true;
     }
@@ -439,7 +437,6 @@ class User
      */
     public function getCollectionRights()
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         return $this->collectionRights;
     }
 
@@ -448,7 +445,6 @@ class User
      */
     public function hasCollectionRights()
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         return $this->hasCollectionRights;
     }
 

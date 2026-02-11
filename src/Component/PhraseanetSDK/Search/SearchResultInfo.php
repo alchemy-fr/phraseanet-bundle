@@ -15,7 +15,6 @@ class SearchResultInfo
      */
     public static function fromValue(EntityManager $entityManager, \stdClass $value)
     {
-        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         return new self($entityManager, $value);
     }
 

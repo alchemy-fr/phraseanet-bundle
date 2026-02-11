@@ -27,7 +27,6 @@ class APIGuzzleAdapter implements GuzzleAdapterInterface
         array $files = array(),
         array $headers = array()
     ) {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
         $json = @json_decode($this->adapter->call($method, $path, $query, $postFields, $files, $headers));
 
         if (JSON_ERROR_NONE !== json_last_error()) {
@@ -35,7 +34,6 @@ class APIGuzzleAdapter implements GuzzleAdapterInterface
                 'Json response cannot be decoded or the encoded data is deeper than the recursion limit'
             );
         }
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($json, true)), FILE_APPEND);
 
         return new APIResponse($json);
     }

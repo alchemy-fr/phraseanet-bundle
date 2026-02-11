@@ -23,7 +23,6 @@ class MeCollection
 			$collections[$value->base_id] = self::fromValue($value);
 		}
 
-//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($collections, true)), FILE_APPEND);
 		return $collections;
 	}
 

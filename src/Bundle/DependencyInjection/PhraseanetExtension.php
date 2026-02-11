@@ -90,11 +90,8 @@ class PhraseanetExtension extends ConfigurableExtension
 
     protected function buildEntityManagerFactory(ContainerBuilder $container, array $configuration)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n", __FILE__, __LINE__, __FUNCTION__), FILE_APPEND);
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $configuration['connection']['secret']), FILE_APPEND);
         $adapterBuilder = new GuzzleAdapterBuilder();
-//var_dump($container);
-//die;
+
         $application = new Definition(Application::class, [
             $adapterBuilder->buildDefinition($container, $configuration['connection']['url'], $configuration['cache']),
             $configuration['connection']['client_id'],
