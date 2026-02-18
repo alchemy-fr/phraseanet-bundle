@@ -18,14 +18,16 @@ class FieldMap
      */
     private $fieldMap = array();
 
+    private $facets_labels = [];
+
     /**
      * @param array $mappings An array of field mappings indexed by alias and locale, ie
      *                        array('alias' => array('fr' => 'phraseanetFieldName'))
      */
-    public function __construct(array $mappings = array())
+    public function __construct(array $mappings = array(), array $facets_labels = array())
     {
         $this->rawMap = $mappings;
-
+        $this->facets_labels = $facets_labels;
         foreach ($mappings as $alias => $localizedFields) {
             foreach ($localizedFields as $locale => $localizedField) {
                 if (! isset($this->fieldMap[$locale])) {
@@ -35,6 +37,11 @@ class FieldMap
                 $this->fieldMap[$locale][$alias] = $localizedField;
             }
         }
+    }
+
+    public function getFacetLabel($key, $locale, $fallbak_locale = 'en')
+    {
+        return $this->facets_labels[$key][$locale] ?? $this->facets_labels[$key][$fallbak_locale] ?? $key;
     }
 
     /**

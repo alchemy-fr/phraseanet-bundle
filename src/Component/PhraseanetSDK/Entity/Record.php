@@ -293,16 +293,19 @@ class Record
      */
     public function getSubdefs()
     {
-        if (! isset($this->source->subdefs)) {
-            $this->subdefs = new ArrayCollection();
-        } else {
-            $subdefs = $this->source->subdefs;
-            if (is_object($this->source->subdefs)) {
-                $subdefs = get_object_vars($this->source->subdefs);
+        if(!isset($this->subdefs)) {
+            if (!isset($this->source->subdefs)) {
+                $this->subdefs = new ArrayCollection();
+            }
+            else {
+                $subdefs = $this->source->subdefs;
+                if (is_object($subdefs)) {
+                    $subdefs = get_object_vars($this->source->subdefs);
+                }
+                $this->subdefs = new ArrayCollection(Subdef::fromList($subdefs));
             }
         }
-
-        return $this->subdefs ?: new ArrayCollection(Subdef::fromList($subdefs));
+        return $this->subdefs;
     }
 
     /**

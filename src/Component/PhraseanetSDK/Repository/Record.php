@@ -101,7 +101,7 @@ class Record extends AbstractRepository
         }
 
         $subdefs = [];
-        if(array_key_exists('main', $asset)) {
+        if(array_key_exists('source', $asset)) {
             $mime_type = $asset['source']['type'];
             $player_type = strtoupper((explode('/', $mime_type))[0]);
             $subdefs['document'] = [

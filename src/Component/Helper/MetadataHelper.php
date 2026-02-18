@@ -36,6 +36,11 @@ class MetadataHelper
         $this->fallbackLocale = $fallbackLocale;
     }
 
+    public function getFacetLabel($key, $locale)
+    {
+        return $this->fieldsMap->getFacetLabel($key, $locale, $this->fallbackLocale);
+    }
+
     public function getFieldName($alias, $locale = null)
     {
         if ($locale === null) {
@@ -48,6 +53,7 @@ class MetadataHelper
             if ($locale !== $this->defaultLocale) {
                 return $this->getFieldName($alias, $this->defaultLocale);
             }
+            throw $exception;
         }
     }
 

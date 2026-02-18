@@ -51,6 +51,7 @@ class PhraseanetConfiguration implements ConfigurationInterface
                         ->scalarNode('uploader')->end()
                         ->append((new CacheNodeBuilder())->getNode())
                         ->append((new MappingNodeBuilder('mappings'))->getNode())
+                        ->append((new MappingNodeBuilder('facets_labels'))->getNode())
                         ->append((new RepositoriesNodeBuilder())->getNode())
                         ->append((new SubDefinitionsNodeBuilder('subdefinitions'))->getNode())
                         ->append((new SubDefinitionsNodeBuilder('thumbnails'))->getNode())

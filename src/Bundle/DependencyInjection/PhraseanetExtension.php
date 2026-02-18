@@ -174,7 +174,7 @@ class PhraseanetExtension extends ConfigurableExtension
 
         $container->setDefinition($baseKey . '.feeds', new Definition(FeedHelper::class));
         $container->setDefinition($baseKey . '.meta', new Definition(MetadataHelper::class, [
-            new Definition(FieldMap::class, [$mergedConfig['mappings']]),
+            new Definition(FieldMap::class, [$mergedConfig['mappings'], $mergedConfig['facets_labels']]),
             'fr',
             'fr'
         ]));
