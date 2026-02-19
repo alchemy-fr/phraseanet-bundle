@@ -130,7 +130,6 @@ class Record
     }
     public function getMetrics()
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) source=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($this->source->metrics, true)), FILE_APPEND);
         return $this->source->metrics;
     }
 

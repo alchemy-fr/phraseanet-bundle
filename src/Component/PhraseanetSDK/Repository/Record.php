@@ -37,6 +37,7 @@ class Record extends AbstractRepository
         }
 
         $asset = $response->getResult();
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($asset, true)), FILE_APPEND);
 
         try {
             $response = $this->query(
@@ -49,7 +50,7 @@ class Record extends AbstractRepository
                 ]
             );
             $metrics = $response->getResult();
-            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($metrics, true)), FILE_APPEND);
+//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($metrics, true)), FILE_APPEND);
         }
         catch (\Exception $e) {
             $metrics = [
@@ -205,10 +206,12 @@ class Record extends AbstractRepository
                     'value'          => join(' ; ', $attribute['value']),
                 ];
             }, $metadataByStruct_id)),
-            'tracking_id'            => $asset['tracking_id'] ?? $asset['id'],
+            'tracking_id'            => $asset['resolvedTrackingId'],
             'tracking_title'         => $asset['title'],
             'metrics'                => $metrics,
         ];
+
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($response, true)), FILE_APPEND);
 
         // turn array into object
         $response = json_decode(json_encode($response));
@@ -252,7 +255,7 @@ class Record extends AbstractRepository
      */
     public function search(array $parameters = [], $pAPINumber = 1)
     {
-        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
+        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(..., pAPINumber=%s)\n%s\n", __FILE__, __LINE__, __FUNCTION__, $pAPINumber, var_export($parameters, true)), FILE_APPEND);
 
         $limit = $parameters['limit'] ?? 10;
         $offset = $parameters['offset'] ?? 0;
@@ -382,6 +385,8 @@ class Record extends AbstractRepository
                         ],
                         'flags'           => $flags,
                         'subdefs'         => $subdefs,
+                        'tracking_id'            => $asset['resolvedTrackingId'],
+                        'tracking_title'         => $asset['title'],
                         'metrics' => null,
                     ];
                 }, $res['hydra:member']),
@@ -410,7 +415,7 @@ class Record extends AbstractRepository
             'limit'   => $limit,
 
         ];
-        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, substr(var_export($results, true), 0, 200000)), FILE_APPEND);
 
         // turn array into object
         $results = json_decode(json_encode($results));
