@@ -206,6 +206,7 @@ class Record extends AbstractRepository
                     'value'          => join(' ; ', $attribute['value']),
                 ];
             }, $metadataByStruct_id)),
+            'asset_id'               => $asset['id'],
             'tracking_id'            => $asset['resolvedTrackingId'],
             'tracking_title'         => $asset['title'],
             'metrics'                => $metrics,
@@ -260,7 +261,8 @@ class Record extends AbstractRepository
         $limit = $parameters['limit'] ?? 10;
         $offset = $parameters['offset'] ?? 0;
         $page = (int)($offset / $limit) + 1;
-        $conditions = ['@isStory = false'];
+        $conditions = [];
+        $conditions[] = '@isStory=false';
         if(array_key_exists('date_field', $parameters)) {
             if(array_key_exists('date_min', $parameters)) {
                 $date_min = new \DateTime($parameters['date_min']);
@@ -294,7 +296,7 @@ class Record extends AbstractRepository
         }
 
         $res = $response->getResult();
-        // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($res, true)), FILE_APPEND);
+//        file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...)\n%s\n\n", __FILE__, __LINE__, __FUNCTION__, var_export($res, true)), FILE_APPEND);
 
         $results = [
             'results' => [
@@ -385,6 +387,7 @@ class Record extends AbstractRepository
                         ],
                         'flags'           => $flags,
                         'subdefs'         => $subdefs,
+                        'asset_id'        => $asset['id'],
                         'tracking_id'            => $asset['resolvedTrackingId'],
                         'tracking_title'         => $asset['title'],
                         'metrics' => null,

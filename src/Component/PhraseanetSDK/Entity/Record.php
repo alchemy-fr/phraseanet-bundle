@@ -120,6 +120,10 @@ class Record
         return $this->source->record_id;
     }
 
+    public function getAssetId(): string
+    {
+        return $this->source->record_id;
+    }
     public function getTrackingId(): string
     {
         return $this->source->tracking_id ?? $this->source->record_id;
