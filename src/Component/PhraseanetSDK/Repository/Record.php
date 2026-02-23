@@ -13,15 +13,14 @@ class Record extends AbstractRepository
     /**
      * Find the record by its id that belongs to the provided databox
      *
-     * @param integer $databoxId    The record databox id
-     * @param integer $recordId     The record id
+     * @param string $databoxId    The record databox id
+     * @param string $recordId     The record id
      * @param boolean $disableCache Bypass cache when fetching a single record
      * @return \Alchemy\Phraseanet\PhraseanetSDK\Entity\Record
      * @throws RuntimeException
      */
     public function findById($databoxId, $recordId, $disableCache = false)
     {
- //       file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(%s, %s, %s)\n", __FILE__, __LINE__, __FUNCTION__, $databoxId, $recordId, $disableCache), FILE_APPEND);
         $response = $this->query(
             'GET',
             '/assets/' . urlencode($recordId),
@@ -50,7 +49,7 @@ class Record extends AbstractRepository
                 ]
             );
             $metrics = $response->getResult();
-//            file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($metrics, true)), FILE_APPEND);
+            // file_put_contents("/var/parade/log.txt", sprintf("%s:%d %s(...) metrics=%s\n", __FILE__, __LINE__, __FUNCTION__, var_export($metrics, true)), FILE_APPEND);
         }
         catch (\Exception $e) {
             $metrics = [
