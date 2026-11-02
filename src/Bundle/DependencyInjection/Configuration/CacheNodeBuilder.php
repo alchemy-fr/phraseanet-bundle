@@ -14,7 +14,7 @@ class CacheNodeBuilder implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('cache');
 
         $this->getNode($treeBuilder);
 
@@ -23,8 +23,8 @@ class CacheNodeBuilder implements ConfigurationInterface
 
     public function getNode(?TreeBuilder $builder = null)
     {
-        $builder = $builder ?: new TreeBuilder();
-        $node = $builder->root('cache');
+        $builder = $builder ?: new TreeBuilder('cache');
+        $node = $builder->getRootNode();
 
         $node
             ->treatNullLike(array('type' => 'none'))

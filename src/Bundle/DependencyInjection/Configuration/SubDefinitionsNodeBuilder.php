@@ -22,7 +22,7 @@ class SubDefinitionsNodeBuilder implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder($this->name);
 
         $this->getNode($treeBuilder);
 
@@ -31,8 +31,8 @@ class SubDefinitionsNodeBuilder implements ConfigurationInterface
 
     public function getNode(?TreeBuilder $builder = null)
     {
-        $builder = $builder ?: new TreeBuilder();
-        $node = $builder->root($this->name);
+        $builder = $builder ?: new TreeBuilder($this->name);
+        $node = $builder->getRootNode();
 
         $node
             ->useAttributeAsKey('name')

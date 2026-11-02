@@ -20,8 +20,8 @@ class PhraseanetConfiguration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
-        $builder = new TreeBuilder();
-        $root = $builder->root('phraseanet');
+        $builder = new TreeBuilder('phraseanet');
+        $root = $builder->getRootNode();
         $nodeBuilder = $root->children();
 
         $this->addSdkNode($nodeBuilder);

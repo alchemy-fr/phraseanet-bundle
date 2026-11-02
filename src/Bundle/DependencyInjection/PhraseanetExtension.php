@@ -47,7 +47,6 @@ class PhraseanetExtension extends ConfigurableExtension
         $loader = new YamlFileLoader($container, $locator);
 
         $loader->load('services.yml');
-        $loader->load('profiler.yml');
 
         $registry = new Definition(EntityManagerRegistry::class);
         $registry->setLazy(true);
