@@ -104,7 +104,7 @@ class MetadataHelper
         return '';
     }
 
-    public function getStoryFields(Story $story, array $fields = null, $locale = null)
+    public function getStoryFields(Story $story, ?array $fields = null, $locale = null)
     {
         if ($locale == null) {
             $locale = $this->defaultLocale;
@@ -129,7 +129,7 @@ class MetadataHelper
         return $map;
     }
 
-    public function getRecordFields(Record $record, array $fields = null, $locale = null)
+    public function getRecordFields(Record $record, ?array $fields = null, $locale = null)
     {
         // @todo Clean up code
         if ($locale == null) {

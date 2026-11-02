@@ -30,7 +30,7 @@ class PhraseanetExtension extends ConfigurableExtension
         return new PhraseanetConfiguration();
     }
 
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'phraseanet';
     }
@@ -41,7 +41,7 @@ class PhraseanetExtension extends ConfigurableExtension
      * @param array $mergedConfig
      * @param ContainerBuilder $container
      */
-    protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
+    protected function loadInternal(array $mergedConfig, \Symfony\Component\DependencyInjection\ContainerBuilder $container): void
     {
         $locator = new FileLocator(__DIR__ . '/../Resources/config');
         $loader = new YamlFileLoader($container, $locator);

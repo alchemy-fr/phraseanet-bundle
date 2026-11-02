@@ -305,7 +305,7 @@ class RecordQueryBuilder
      * @throws \InvalidArgumentException when the field name is an invalid or empty string
      * @throws \InvalidArgumentException when both min and max date values are null.
      */
-    public function setDateCriterion($fieldName, \DateTimeInterface $minDate = null, \DateTimeInterface $maxDate = null)
+    public function setDateCriterion($fieldName, ?\DateTimeInterface $minDate = null, ?\DateTimeInterface $maxDate = null)
     {
         $this->validateFieldName($fieldName, 'Field name is required and must be a non-empty string.');
 
