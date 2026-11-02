@@ -12,19 +12,19 @@ class RepositoriesNodeBuilder implements ConfigurationInterface
      *
      * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('repositories');
 
         $this->getNode($treeBuilder);
 
         return $treeBuilder;
     }
 
-    public function getNode(TreeBuilder $builder = null)
+    public function getNode(?TreeBuilder $builder = null)
     {
-        $builder = $builder ?: new TreeBuilder();
-        $node = $builder->root('repositories');
+        $builder = $builder ?: new TreeBuilder('repositories');
+        $node = $builder->getRootNode();
 
         $node
             ->useAttributeAsKey('name')

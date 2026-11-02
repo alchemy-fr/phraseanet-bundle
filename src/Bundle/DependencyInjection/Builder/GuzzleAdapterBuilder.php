@@ -14,7 +14,7 @@ class GuzzleAdapterBuilder
      * @param string $instanceUrl
      * @return Definition
      */
-    public function buildDefinition(ContainerBuilder $container, $instanceUrl, array $cacheConfig = null)
+    public function buildDefinition(ContainerBuilder $container, $instanceUrl, ?array $cacheConfig = null)
     {
         $plugins = $this->getPluginReferences($container);
 

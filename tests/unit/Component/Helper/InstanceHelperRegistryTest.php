@@ -5,8 +5,10 @@ namespace Alchemy\Phraseanet\Tests\Helper;
 use Alchemy\Phraseanet\Helper\InstanceHelper;
 use Alchemy\Phraseanet\Helper\InstanceHelperRegistry;
 
-class InstanceHelperRegistryTest extends \PHPUnit_Framework_TestCase
+class InstanceHelperRegistryTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testHasHelperReturnsFalseForUndefinedNames()
     {
@@ -15,11 +17,10 @@ class InstanceHelperRegistryTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($helperRegistry->hasHelper('missing'));
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGetUndefinedHelperThrowsOutOfBoundsException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $helperRegistry = new InstanceHelperRegistry();
 
         $helperRegistry->getHelper('missing');

@@ -33,6 +33,16 @@ class EntityManagerRegistry
         return $this->factories[$instanceAlias]->getEntityManager();
     }
 
+    /**
+     * The entity manager of the application token, whoever is logged in.
+     */
+    public function getApplicationEntityManager($instanceAlias = null)
+    {
+        $alias = $instanceAlias ?: $this->defaultManager;
+
+        return ($alias ? $this->factories[$alias] : reset($this->factories))->getApplicationEntityManager();
+    }
+
     public function getDefaultEntityManager()
     {
         if ($this->defaultManager == null) {

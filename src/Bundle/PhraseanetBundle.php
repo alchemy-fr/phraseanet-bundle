@@ -14,7 +14,7 @@ class PhraseanetBundle extends Bundle
         $container->addCompilerPass(new TokenProviderCompilerPass());
     }
 
-    public function getContainerExtension()
+    public function getContainerExtension(): ?\Symfony\Component\DependencyInjection\Extension\ExtensionInterface
     {
         return new PhraseanetExtension();
     }

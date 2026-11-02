@@ -20,19 +20,19 @@ class MappingNodeBuilder implements ConfigurationInterface
      *
      * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): \Symfony\Component\Config\Definition\Builder\TreeBuilder
     {
-        $builder = new TreeBuilder();
+        $builder = new TreeBuilder($this->rootName);
 
         $this->getNode($builder);
 
         return $builder;
     }
 
-    public function getNode(TreeBuilder $builder = null)
+    public function getNode(?TreeBuilder $builder = null)
     {
-        $builder = $builder ?: new TreeBuilder();
-        $node = $builder->root($this->rootName);
+        $builder = $builder ?: new TreeBuilder($this->rootName);
+        $node = $builder->getRootNode();
 
         $node
             ->useAttributeAsKey('name')

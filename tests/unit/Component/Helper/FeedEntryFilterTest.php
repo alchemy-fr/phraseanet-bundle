@@ -8,7 +8,7 @@ use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\FeedEntryItem;
 
-class FeedEntryFilterTest extends \PHPUnit_Framework_TestCase
+class FeedEntryFilterTest extends \PHPUnit\Framework\TestCase
 {
 
     public function getFeedEntryData()

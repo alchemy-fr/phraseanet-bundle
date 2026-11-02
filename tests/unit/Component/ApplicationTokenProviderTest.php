@@ -4,7 +4,7 @@ namespace Alchemy\Phraseanet\Tests;
 
 use Alchemy\Phraseanet\ApplicationTokenProvider;
 
-class ApplicationTokenProviderTest extends \PHPUnit_Framework_TestCase
+class ApplicationTokenProviderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testGetTokenReturnsAssignedToken()

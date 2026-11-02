@@ -28,6 +28,11 @@ class ChainedTokenProvider implements TokenProvider
     /**
      * @return null|string
      */
+    public function getDefaultToken()
+    {
+        return $this->defaultProvider !== null ? $this->defaultProvider->getToken() : null;
+    }
+
     public function getToken()
     {
         foreach ($this->providers as $provider) {

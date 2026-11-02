@@ -6,8 +6,10 @@ use Alchemy\Phraseanet\Query\RecordQueryBuilder;
 use PhraseanetSDK\Entity\DataboxCollection;
 use PhraseanetSDK\Repository\Record;
 
-class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
+class RecordQueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testSettingQueryTermCreatesQueryWithQueryField()
     {
@@ -15,7 +17,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setQuery('bacon IS good');
 
-        $this->assertArraySubset(array('query' => 'bacon IS good'), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('query' => 'bacon IS good')), $actual);
     }
 
     public function testAddingCollectionEntityCreatesQueryWithBaseField()
@@ -27,7 +31,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addCollection($collection->reveal());
 
-        $this->assertArraySubset(array('bases' => [12]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('bases' => [12])), $actual);
     }
 
     public function testAddingOneCollectionCreatesQueryWithBaseField()
@@ -36,7 +42,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addCollection(12);
 
-        $this->assertArraySubset(array('bases' => [12]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('bases' => [12])), $actual);
     }
 
     public function testAddingMultipleCollectionsCreatesQueryWithBaseField()
@@ -45,7 +53,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addCollections(array(10, 12));
 
-        $this->assertArraySubset(array('bases' => [10, 12]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('bases' => [10, 12])), $actual);
     }
 
     public function testSettingCollectionsReplacesExistingCollectionParameters()
@@ -55,7 +65,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->addCollection(42);
         $builder->setCollections(array(12, 23));
 
-        $this->assertArraySubset(array('bases' => [12, 23]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('bases' => [12, 23])), $actual);
     }
 
     public function testIntersectCollectionsFiltersOutOtheCollections()
@@ -65,7 +77,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->addCollections(array(12, 23));
         $builder->intersectCollections(array(42, 12));
 
-        $this->assertArraySubset(array('bases' => [12]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('bases' => [12])), $actual);
     }
 
     public function testSetOffsetCreatesQueryWithOffsetParameter()
@@ -74,7 +88,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setOffset(42);
 
-        $this->assertArraySubset(array('offset_start' => 42), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('offset_start' => 42)), $actual);
     }
 
     public function setPageCreatesQueryWithOffsetParameter()
@@ -84,7 +100,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->setLimit(20);
         $builder->setPage(2);
 
-        $this->assertArraySubset(array('offset_start' => 40), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('offset_start' => 40)), $actual);
     }
 
     public function testSetLimitCreateQueryWithLimitParameter()
@@ -93,10 +111,12 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setLimit(21);
 
-        $this->assertArraySubset(array('per_page' => 21), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('per_page' => 21)), $actual);
     }
 
-    public function getSortParameterMappings()
+    public static function getSortParameterMappings()
     {
         return array(
             [RecordQueryBuilder::SORT_RANDOM, 'random'],
@@ -113,13 +133,15 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $builder = new RecordQueryBuilder();
 
         $builder->sortBy($order, true);
-        $this->assertArraySubset(array('sort' => $queryValue, 'ord' => 'desc'), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array('sort' => $queryValue, 'ord' => 'desc')), $actual);
 
         $builder->sortBy($order, false);
-        $this->assertArraySubset(array('sort' => $queryValue, 'ord' => 'asc'), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array('sort' => $queryValue, 'ord' => 'asc')), $actual);
     }
 
-    public function getRecordTypeParameterMappings()
+    public static function getRecordTypeParameterMappings()
     {
         return array(
             [RecordQueryBuilder::RECORD_TYPE_AUDIO, 'audio'],
@@ -139,14 +161,15 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setRecordType($recordType);
 
-        $this->assertArraySubset(array('record_type' => $queryValue), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('record_type' => $queryValue)), $actual);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidRecordTypeThrowsException()
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->setRecordType('bacon');
@@ -156,7 +179,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $builder = new RecordQueryBuilder();
 
-        $this->assertArraySubset(array('search_type' => 0), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('search_type' => 0)), $actual);
     }
 
     public function testSetSearchTypeCreatesQueryWithSearchTypeParameter()
@@ -165,18 +190,21 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->setSearchType(RecordQueryBuilder::SEARCH_RECORDS);
 
-        $this->assertArraySubset(array('search_type' => 0), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('search_type' => 0)), $actual);
 
         $builder->setSearchType(RecordQueryBuilder::SEARCH_STORIES);
 
-        $this->assertArraySubset(array('search_type' => 1), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('search_type' => 1)), $actual);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidSearchTypeThrowsException()
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->setSearchType(42);
@@ -192,11 +220,12 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
             \DateTime::createFromFormat('Y-m-d', '2015-08-31')
         );
 
-        $this->assertArraySubset(array(
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array(
             'date_field' => 'baconDLC',
             'date_min' => '2015/08/01',
             'date_max' => '2015/08/31'
-        ), $builder->getQuery()->getRawQuery());
+        )), $actual);
     }
 
     public function testSetDateCriterionWithNoMaxCreatesQueryWithoutDateMaxField()
@@ -208,10 +237,11 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
             \DateTime::createFromFormat('Y-m-d', '2015-08-01')
         );
 
-        $this->assertArraySubset(array(
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array(
             'date_field' => 'baconDLC',
             'date_min' => '2015/08/01'
-        ), $builder->getQuery()->getRawQuery());
+        )), $actual);
 
         $this->assertArrayNotHasKey('date_max', $builder->getQuery()->getRawQuery());
     }
@@ -226,15 +256,16 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
             \DateTime::createFromFormat('Y-m-d', '2015-08-01')
         );
 
-        $this->assertArraySubset(array(
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array(
             'date_field' => 'baconDLC',
             'date_max' => '2015/08/01'
-        ), $builder->getQuery()->getRawQuery());
+        )), $actual);
 
         $this->assertArrayNotHasKey('date_min', $builder->getQuery()->getRawQuery());
     }
 
-    public function getInvalidDateFieldNames()
+    public static function getInvalidDateFieldNames()
     {
         return array(
             [null],
@@ -248,20 +279,20 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getInvalidDateFieldNames
-     * @expectedException \InvalidArgumentException
      */
     public function testSetDateCriterionWithInvalidFieldNameThrowsException($fieldName)
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->setDateCriterion($fieldName, \DateTime::createFromFormat('Y-m-d', '2015-08-01'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetDateCriterionWithNoMinAndNoMaxThrowsException()
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->setDateCriterion('baconDLC');
@@ -273,7 +304,9 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addStatus(1, true);
 
-        $this->assertArraySubset(array('status' => [1 => true]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('status' => [1 => true])), $actual);
     }
 
     public function testAddStatusesCreatesQueryWithStatusField()
@@ -282,10 +315,8 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addStatuses(array(1 => true, 2 => false, 3 => true));
 
-        $this->assertArraySubset(
-            array('status' => [1 => true, 2 => false, 3 => true]),
-            $builder->getQuery()->getRawQuery()
-        );
+        $actual = $builder->getQuery()->getRawQuery();
+        $this->assertEquals(array_replace_recursive($actual, array('status' => [1 => true, 2 => false, 3 => true])), $actual);
     }
 
     public function testSetStatusesReplacesExistingStatusParameters()
@@ -297,10 +328,8 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $query = $builder->getQuery()->getRawQuery();
 
-        $this->assertArraySubset(
-            array('status' => [2 => false, 3 => true]),
-            $query
-        );
+        $actual = $query;
+        $this->assertEquals(array_replace_recursive($actual, array('status' => [2 => false, 3 => true])), $actual);
 
         $this->assertEquals(array(2 => false, 3 => true), $query['status']);
     }
@@ -311,10 +340,12 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addField('bacon');
 
-        $this->assertArraySubset(array('fields' => [ 'bacon' ]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('fields' => [ 'bacon' ])), $actual);
     }
 
-    public function getInvalidFieldNames()
+    public static function getInvalidFieldNames()
     {
         return array(
             [null],
@@ -328,10 +359,11 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getInvalidFieldNames
-     * @expectedException \InvalidArgumentException
      */
     public function testAddFieldUsingInvalidNameThrowsException($name)
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->addField($name);
@@ -343,15 +375,18 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->addFields(array('bacon', 'eggs'));
 
-        $this->assertArraySubset(array('fields' => [ 'bacon', 'eggs' ]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('fields' => [ 'bacon', 'eggs' ])), $actual);
     }
 
     /**
      * @dataProvider getInvalidFieldNames
-     * @expectedException \InvalidArgumentException
      */
     public function testAddsFieldsWithInvalidNameThrowsException($name)
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->addFields(array('bacon', 'eggs', $name));
@@ -365,15 +400,18 @@ class RecordQueryBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->addFields(array('bacon', 'eggs'));
         $builder->setFields(array('ham', 'yolk'));
 
-        $this->assertArraySubset(array('fields' => [ 'ham', 'yolk' ]), $builder->getQuery()->getRawQuery());
+        $actual = $builder->getQuery()->getRawQuery();
+
+        $this->assertEquals(array_replace_recursive($actual, array('fields' => [ 'ham', 'yolk' ])), $actual);
     }
 
     /**
      * @dataProvider getInvalidFieldNames
-     * @expectedException \InvalidArgumentException
      */
     public function testSetFieldsWithInvalidNameThrowsException($name)
     {
+        $this->expectException('InvalidArgumentException');
+
         $builder = new RecordQueryBuilder();
 
         $builder->setFields(array('bacon', 'eggs', $name));

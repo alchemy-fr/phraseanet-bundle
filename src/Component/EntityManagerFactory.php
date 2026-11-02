@@ -80,6 +80,19 @@ class EntityManagerFactory
      * @param $name
      * @return \PhraseanetSDK\AbstractRepository
      */
+    public function getApplicationEntityManager()
+    {
+        $token = $this->tokenProvider instanceof ChainedTokenProvider
+            ? $this->tokenProvider->getDefaultToken()
+            : $this->tokenProvider->getToken();
+
+        if ($token === null) {
+            throw new \RuntimeException('An application token is required.');
+        }
+
+        return $this->application->getEntityManager($token, $this->getOptions());
+    }
+
     public function getRepository($name)
     {
         $configuration = $this->getProxyFactoryConfiguration();

@@ -4,7 +4,7 @@ namespace Alchemy\Phraseanet\Tests\Mapping;
 
 use Alchemy\Phraseanet\Mapping\FieldMap;
 
-class FieldMapTest extends \PHPUnit_Framework_TestCase
+class FieldMapTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testToArrayReturnsDefinedFieldMappings()
@@ -25,11 +25,10 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ham', $map->getFieldName('bacon', 'en'));
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGetUndefinedFieldThrowsException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new FieldMap([
             'bacon' => [ 'en' => 'ham' ],
             'egg' => [ 'en' => 'yolk' ]
@@ -38,11 +37,10 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
         $map->getFieldName('milk', 'en');
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGetUndefinedFieldInLocaleThrowsException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new FieldMap([
             'bacon' => [ 'en' => 'ham' ],
             'egg' => [ 'en' => 'yolk' ]
@@ -88,21 +86,19 @@ class FieldMapTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($map->isFieldMapped('jambon', 'en'));
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGetAliasFromUndefinedFieldNameThrowsException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
 
         $map->getAliasFromFieldName('fromage', 'fr');
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGetAliasFromUndefinedLocaleThrowsException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new FieldMap([ 'bacon' => [ 'fr' => 'jambon' ] ]);
 
         $map->getAliasFromFieldName('ham', 'en');

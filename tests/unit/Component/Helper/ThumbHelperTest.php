@@ -8,13 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Subdef;
 
-class ThumbHelperTest extends \PHPUnit_Framework_TestCase
+class ThumbHelperTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
     public function testFetchThumbnailsForInvalidTypeThrowsException()
     {
+        $this->expectException('InvalidArgumentException');
+
         $thumbHelper = new ThumbHelper(new DefinitionMap());
 
         $thumbHelper->fetch(new \stdClass(), 'invalid_type');

@@ -8,7 +8,7 @@ use PhraseanetSDK\Entity\Record;
 use PhraseanetSDK\Entity\Story;
 use Parade\Component\Media\Meta\FieldMapRegistry;
 
-class PhraseanetExtension extends \Twig_Extension
+class PhraseanetExtension extends \Twig\Extension\AbstractExtension
 {
     /**
      * @var InstanceHelperRegistry
@@ -29,12 +29,12 @@ class PhraseanetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('record_hash', [ $this, 'getRecordHash' ]),
-            new \Twig_SimpleFunction('record_caption', [$this, 'getRecordCaption']),
-            new \Twig_SimpleFunction('story_caption', [$this, 'getStoryCaption']),
-            new \Twig_SimpleFunction('fetch_thumbnail', [$this, 'fetchThumbnail']),
-            new \Twig_SimpleFunction('fetch_thumbnail_url', [$this, 'fetchThumbnailUrl']),
-            new \Twig_SimpleFunction('feed_entry_has_pdf_documents', [$this, 'entryContainsPdfDocuments'])
+            new \Twig\TwigFunction('record_hash', [ $this, 'getRecordHash' ]),
+            new \Twig\TwigFunction('record_caption', [$this, 'getRecordCaption']),
+            new \Twig\TwigFunction('story_caption', [$this, 'getStoryCaption']),
+            new \Twig\TwigFunction('fetch_thumbnail', [$this, 'fetchThumbnail']),
+            new \Twig\TwigFunction('fetch_thumbnail_url', [$this, 'fetchThumbnailUrl']),
+            new \Twig\TwigFunction('feed_entry_has_pdf_documents', [$this, 'entryContainsPdfDocuments'])
         );
     }
 
