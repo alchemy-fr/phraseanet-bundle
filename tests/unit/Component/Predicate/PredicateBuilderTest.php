@@ -5,7 +5,7 @@ namespace Alchemy\Phraseanet\Tests\Predicate;
 use Alchemy\Phraseanet\Predicate\PredicateBuilder;
 use Alchemy\Phraseanet\Query\QueryPredicateVisitor;
 
-class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
+class PredicateBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     private function assertQuery($expected, PredicateBuilder $builder)
@@ -104,11 +104,10 @@ class PredicateBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertQuery('((bacon AND eggs) OR (steak AND fries))', $builder);
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     */
     public function testEndGroupThrowsExceptionWhenNoGroupIsActive()
     {
+        $this->expectException('BadMethodCallException');
+
         $builder = new PredicateBuilder();
 
         $builder->endGroup();

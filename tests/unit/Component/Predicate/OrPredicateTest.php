@@ -7,8 +7,10 @@ use Alchemy\Phraseanet\Predicate\OrPredicate;
 use Alchemy\Phraseanet\Predicate\PredicateVisitor;
 use Prophecy\Argument;
 
-class OrPredicateTest extends \PHPUnit_Framework_TestCase
+class OrPredicateTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testOrPredicateReturnsSelfWithExtraPredicate()
     {

@@ -7,7 +7,7 @@ use Alchemy\Phraseanet\Predicate\LiteralPredicate;
 use Alchemy\Phraseanet\Predicate\NullPredicate;
 use Alchemy\Phraseanet\Predicate\PredicateVisitor;
 
-class CompositePredicateTest extends \PHPUnit_Framework_TestCase
+class CompositePredicateTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testPruningNodesByType()

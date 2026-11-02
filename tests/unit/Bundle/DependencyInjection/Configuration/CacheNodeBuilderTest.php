@@ -6,7 +6,7 @@ use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\CacheNodeBuilder;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
-class CacheNodeBuilderTest extends \PHPUnit_Framework_TestCase
+class CacheNodeBuilderTest extends \PHPUnit\Framework\TestCase
 {
     private function getProcessedConfiguration($source)
     {
@@ -89,11 +89,10 @@ EOY;
         ), $mergedConfiguration);
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
     public function testConfigurationDetectsMissingRedisCacheParameters()
     {
+        $this->expectException('Symfony\Component\Config\Definition\Exception\InvalidConfigurationException');
+
         $rawData = <<<EOY
 cache:
     type: redis
@@ -104,11 +103,10 @@ EOY;
     }
 
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     */
     public function testConfigurationDetectsMissingRedisHostCacheParameters()
     {
+        $this->expectException('Symfony\Component\Config\Definition\Exception\InvalidConfigurationException');
+
         $rawData = <<<EOY
 cache:
     type: redis

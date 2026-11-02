@@ -4,7 +4,7 @@ namespace Alchemy\Phraseanet\Tests\Query;
 
 use Alchemy\Phraseanet\Query\RecordQuery;
 
-class RecordQueryTest extends \PHPUnit_Framework_TestCase
+class RecordQueryTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testGetQueryReturnsCorrectValue()
@@ -15,7 +15,7 @@ class RecordQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $query->getQueryType());
     }
 
-    public function getInvalidRepositories()
+    public static function getInvalidRepositories()
     {
         return array(
             array(new \stdClass()),
@@ -27,10 +27,11 @@ class RecordQueryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getInvalidRepositories
-     * @expectedException \InvalidArgumentException
      */
     public function testExecutingQueryWithAnInvalidRepositoryRaisesAnException($repository)
     {
+        $this->expectException('InvalidArgumentException');
+
         $query = new RecordQuery([], 0);
 
         $query->execute($repository);

@@ -10,8 +10,10 @@ use PhraseanetSDK\EntityManager;
 use PhraseanetSDK\Repository\Story;
 use Prophecy\Argument;
 
-class EntityManagerFactoryTest extends \PHPUnit_Framework_TestCase
+class EntityManagerFactoryTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testGetEntityManagerReturnsManagerFromCorrectApplication()
     {
@@ -33,11 +35,10 @@ class EntityManagerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($entityManager->reveal(), $factory->getEntityManager());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetEntityManagerThrowsExceptionWhenTokenIsNull()
     {
+        $this->expectException('RuntimeException');
+
         $tokenProvider = $this->prophesize(TokenProvider::class);
         $tokenProvider->getToken()->willReturn(null);
 

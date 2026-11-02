@@ -6,7 +6,7 @@ use Alchemy\PhraseanetBundle\DependencyInjection\PhraseanetConfiguration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
-class PhraseanetConfigurationTest extends \PHPUnit_Framework_TestCase
+class PhraseanetConfigurationTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testConfigurationParsesCorrectly()

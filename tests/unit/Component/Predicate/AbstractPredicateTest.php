@@ -8,7 +8,7 @@ use Alchemy\Phraseanet\Predicate\NullPredicate;
 use Alchemy\Phraseanet\Predicate\OrPredicate;
 use Alchemy\Phraseanet\Predicate\PredicateVisitor;
 
-class AbstractPredicateTest extends \PHPUnit_Framework_TestCase
+class AbstractPredicateTest extends \PHPUnit\Framework\TestCase
 {
     public function testAndPredicateReturnsNewAndPredicate()
     {

@@ -9,8 +9,10 @@ use PhraseanetSDK\Entity\Metadata;
 use PhraseanetSDK\Entity\RecordCaption;
 use PhraseanetSDK\Entity\Story;
 
-class MetadataHelperTest extends \PHPUnit_Framework_TestCase
+class MetadataHelperTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     private function buildCaptions(array $captions)
     {

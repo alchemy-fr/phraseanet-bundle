@@ -6,8 +6,10 @@ use Alchemy\Phraseanet\Predicate\LiteralPredicate;
 use Alchemy\Phraseanet\Predicate\PredicateVisitor;
 use Prophecy\Argument;
 
-class LiteralPredicateTest extends \PHPUnit_Framework_TestCase
+class LiteralPredicateTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testGetPredicateValueReturnsLiteralValue()
     {

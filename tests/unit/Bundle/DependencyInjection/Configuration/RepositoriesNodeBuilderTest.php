@@ -6,7 +6,7 @@ use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\RepositoriesNodeB
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
-class RepositoriesNodeBuilderTest extends \PHPUnit_Framework_TestCase
+class RepositoriesNodeBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testConfigurationParsesRepositoriesCorrectly()

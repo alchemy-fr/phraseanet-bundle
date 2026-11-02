@@ -9,7 +9,7 @@ use Alchemy\Phraseanet\Helper\ThumbHelper;
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
 use Alchemy\Phraseanet\Mapping\FieldMap;
 
-class InstanceHelperTest extends \PHPUnit_Framework_TestCase
+class InstanceHelperTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testChildHelpersAreProperlyAssigned()

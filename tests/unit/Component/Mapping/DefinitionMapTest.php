@@ -4,7 +4,7 @@ namespace Alchemy\Phraseanet\Tests\Mapping;
 
 use Alchemy\Phraseanet\Mapping\DefinitionMap;
 
-class DefinitionMapTest extends \PHPUnit_Framework_TestCase
+class DefinitionMapTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testToArrayReturnsDefinedMap()
@@ -45,21 +45,19 @@ class DefinitionMapTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($map->hasSubDefinition('milk', 'default'));
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGettingAnUndefinedSubdefinitionThrowsAnException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new DefinitionMap();
 
         $map->getSubDefinition('bacon');
     }
 
-    /**
-     * @expectedException \OutOfBoundsException
-     */
     public function testGettingAnUndefinedSubdefinitionAndTypeThrowsAnException()
     {
+        $this->expectException('OutOfBoundsException');
+
         $map = new DefinitionMap();
 
         $map->getSubDefinition('bacon', 'default');

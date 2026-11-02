@@ -6,7 +6,7 @@ use Alchemy\Phraseanet\Predicate\LiteralPredicate;
 use Alchemy\Phraseanet\Predicate\NullPredicate;
 use Alchemy\Phraseanet\Query\QueryPredicateVisitor;
 
-class QueryPredicateVisitorTest extends \PHPUnit_Framework_TestCase
+class QueryPredicateVisitorTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testCompileLiteralPredicate()

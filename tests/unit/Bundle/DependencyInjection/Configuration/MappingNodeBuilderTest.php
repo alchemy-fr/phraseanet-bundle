@@ -6,7 +6,7 @@ use Alchemy\PhraseanetBundle\DependencyInjection\Configuration\MappingNodeBuilde
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
-class MappingNodeBuilderTest extends \PHPUnit_Framework_TestCase
+class MappingNodeBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testConfigurationParsesMappingCorrectly()

@@ -8,7 +8,7 @@ use PhraseanetSDK\Entity\FeedEntry;
 use PhraseanetSDK\Entity\FeedEntryItem;
 use PhraseanetSDK\Entity\Record;
 
-class FeedHelperTest extends \PHPUnit_Framework_TestCase
+class FeedHelperTest extends \PHPUnit\Framework\TestCase
 {
     public function getFeedEntryItems()
     {

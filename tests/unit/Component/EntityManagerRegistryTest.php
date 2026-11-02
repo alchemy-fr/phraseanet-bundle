@@ -9,8 +9,10 @@ use PhraseanetSDK\Application;
 use PhraseanetSDK\EntityManager;
 use Prophecy\Argument;
 
-class EntityManagerRegistryTest extends \PHPUnit_Framework_TestCase
+class EntityManagerRegistryTest extends \PHPUnit\Framework\TestCase
 {
+    use \Prophecy\PhpUnit\ProphecyTrait;
+
 
     public function testGetEntityManagerByKeyReturnsCorrectInstance()
     {
