@@ -83,7 +83,7 @@ abstract class CompositePredicate extends AbstractPredicate implements \Iterator
      * @return Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->getPredicates());
     }
